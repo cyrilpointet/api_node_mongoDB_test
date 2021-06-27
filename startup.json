@@ -1,0 +1,14 @@
+{
+  "apps" : [{
+    "name"        : "Api",
+    "script"      : "./bin/www",
+    "watch"       : "./",
+    "ignore_watch" : ["./mongo", "./public"],
+    "log_date_format"  : "YYYY-MM-DD HH:mm Z",
+    "instances": "max",
+    "exec_mode"  : "cluster_mode",
+    "watch_options": {
+      "usePolling": true
+    }
+  }]
+}
