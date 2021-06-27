@@ -1,11 +1,11 @@
-#Api REST Node & MongoDB + Admin
+# Api REST Node & MongoDB + Admin
 
-###Frameworks utilisés
+### Frameworks utilisés
 Back: Express, Mongoose<br/>
 Front: React, React-admin
 
 
-##Lancement
+## Lancement
 Après le clonage, installer les dépendances : `npm i`<br/>
 Lancer les containers (cela lance également le serveur Node avec PM2) : `docker-compose up`<br/>
 Au premier run, remplir la db pour avoir au moins un user : `npm run seed`<br/>
@@ -15,7 +15,7 @@ Aller sur : `http://localhost:8081/`
 Email : admin@admin.admin<br/>
 Password : admin
 
-##Notes
+## Notes
 - **ATTENTION: Il n'y a pas de système de migration en mongoDB avec l'orm mongoose !!!**<br>
 Ni avec les autres, d'ailleurs ! Le moindre changement mal géré dans un model peut pourrir définitivement la db et faire planter toute l'appli.<br>
   Je recommande **très fortement** l'utilisation de bases mySql (ou MariaDB, Postgres,...) avec l'orm Sequelize qui gère très bien tout ça (comme Doctrine mais en JS).
@@ -26,7 +26,7 @@ Je pense toutefois que dans un "vrai projet en prod", la maintenance serait plus
   
 - J'ai mis une collection Postman pour les test api : `test_mongo_db.postman_collection.json`. A utiliser aussi pour ajouter des users/admin.
 
-##Conclusion
+## Conclusion
 Le fonctionnement de React-Admin est assez simple: il consomme une api-rest en CRUD en lui passant des arguments (ex: ?sort=id).
 Si l'api est propre et bien organisée, le dev du front peut être très rapide. La communication entre devs back/front avec des specs précises sera très importante.
 
