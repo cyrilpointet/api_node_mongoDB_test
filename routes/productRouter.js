@@ -14,13 +14,4 @@ router.put('/:id', auth, thingsCtrl.updateProduct);
 router.delete('/:id', auth, thingsCtrl.deleteProduct);
 router.delete('/', auth, thingsCtrl.deleteManyProducts);
 
-// router.post('/', thingsCtrl.createProduct)
-//
-// router.get('/', thingsCtrl.getAllProducts);
-// router.get('/:id', thingsCtrl.getProductById);
-//
-// router.put('/:id', thingsCtrl.updateProduct);
-//
-// router.delete('/:id', thingsCtrl.deleteProduct);
-
 module.exports = router;
