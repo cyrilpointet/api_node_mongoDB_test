@@ -8,12 +8,18 @@ import Dashboard from './components/Dashboard';
 import {ProductList} from "./components/products/ProductList";
 import {ProductEdit} from "./components/products/ProductEdit";
 import {ProductCreate} from "./components/products/ProductCreate";
+import {MemberList} from "./components/members/MemberList";
+import {MemberShow} from "./components/members/MemberShow";
+import {GroupShow} from "./components/groups/GroupShow";
+import {GroupList} from "./components/groups/GroupList";
 
 const dataProvider = myDataProvider('http://localhost:8081');
 
 const Main = () => (
     <Admin dataProvider={dataProvider} dashboard={Dashboard} authProvider={authProvider}>
         <Resource name="product" list={ProductList} edit={ProductEdit} create={ProductCreate} />
+        <Resource name="member" list={MemberList} show={MemberShow} />
+        <Resource name="group" list={GroupList} show={GroupShow} />
     </Admin>
 )
 
