@@ -29,7 +29,7 @@ async function seedProducts() {
 async function seedMembers() {
     const members = await Member.find();
     for (let i = 0; i < members.length; i++) {
-        members[i].delete();
+        members[i].remove();
     }
     const gryffondor = await Group.findOne({ name: 'gryffondor' });
     for (let i = 0; i < 5; i++) {
@@ -75,7 +75,7 @@ async function seedMembers() {
 async function seedGroups() {
     const groups = await Group.find();
     for (let i = 0; i < groups.length; i++) {
-        groups[i].delete();
+        groups[i].remove();
     }
     const gryffondor  = new Group({
         name: 'gryffondor',

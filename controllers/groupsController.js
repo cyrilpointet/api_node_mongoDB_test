@@ -17,11 +17,21 @@ exports.getAllGroups = async (req, res, next) => {
     } catch (e) {
         res.status(500).json({ error: e.message })
     }
-
 }
 
 exports.getGroupById = (req, res, next) => {
     Group.findOne({ _id: req.params.id })
+        .populate('members')
         .then(group => res.status(200).json(group))
         .catch(error => res.status(404).json({ error }));
+}
+
+exports.deleteGroup = async (req, res, next) => {
+    try {
+        const group = await Group.findOne({ _id: req.params.id });
+        const resp = await group.remove();
+        res.status(200).json(resp);
+    } catch(error) {
+        res.status(400).json({ error });
+    }
 }

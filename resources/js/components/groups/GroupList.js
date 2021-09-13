@@ -1,4 +1,4 @@
-import {Datagrid, List, TextField, FunctionField} from "react-admin";
+import {Datagrid, List, TextField, FunctionField, EditButton} from "react-admin";
 import * as React from "react";
 
 export const GroupList = props => {
@@ -17,6 +17,7 @@ export const GroupList = props => {
             <Datagrid rowClick="show">
                 <TextField source="name" label="Nom" />
                 <FunctionField label="Membres" render={group => getMembersNames(group)} />
+                <EditButton />
             </Datagrid>
         </List>
     );

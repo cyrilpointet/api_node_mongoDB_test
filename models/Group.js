@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Member = require('./Member');
 
 const Group = mongoose.Schema({
     name: { type: String, required: true },
@@ -17,6 +16,14 @@ Group.virtual('members', {
 
 Group.set('toJSON', {
     virtuals: true
+});
+
+Group.pre('remove', function(next){
+    this.model('Member').updateMany(
+        {groups: {$in: [this._id]}},
+        {$pull: {groups: this._id}},
+        next
+    )
 });
 
 module.exports = mongoose.model('Group', Group);
