@@ -1,8 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
+import index from '../resources/html/index.html';
 
 router.get('/', function(req, res, next) {
-  res.render('index');
+  res.sendFile(__dirname + "/" + index);
+  //res.json({})
 });
 
-module.exports = router;
+export default router;

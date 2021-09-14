@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8a11a3ff-55c7-485c-a618-e1257d7e039e",
+		"_postman_id": "23bc0098-9225-4da4-bdb4-5bbe6ff02165",
 		"name": "test mongo db",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -77,7 +77,7 @@
 			"response": []
 		},
 		{
-			"name": "Post product",
+			"name": "Post article",
 			"event": [
 				{
 					"listen": "test",
@@ -101,7 +101,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"title\": \"Titre\",\n    \"description\": \"Description\",\n    \"price\": 128\n}",
+					"raw": "{\n    \"title\": \"Titre\",\n    \"content\": \"Description\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -109,21 +109,21 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8081/product",
+					"raw": "http://localhost:8081/article",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8081",
 					"path": [
-						"product"
+						"article"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Get all products",
+			"name": "Get all articles",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -134,21 +134,21 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8081/product",
+					"raw": "http://localhost:8081/article",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8081",
 					"path": [
-						"product"
+						"article"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Get product by Id",
+			"name": "Get article by Id",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -159,14 +159,14 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8081/product/{{thingId}}",
+					"raw": "http://localhost:8081/article/{{thingId}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8081",
 					"path": [
-						"product",
+						"article",
 						"{{thingId}}"
 					]
 				}
@@ -174,7 +174,7 @@
 			"response": []
 		},
 		{
-			"name": "Update product",
+			"name": "Update article",
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -186,7 +186,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"description\": \"Description updated\"\n}",
+					"raw": "{\n    \"content\": \"Description updated\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -194,14 +194,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8081/product/{{thingId}}",
+					"raw": "http://localhost:8081/article/{{thingId}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8081",
 					"path": [
-						"product",
+						"article",
 						"{{thingId}}"
 					],
 					"query": [
@@ -216,9 +216,117 @@
 			"response": []
 		},
 		{
-			"name": "Delete product",
+			"name": "Delete article",
 			"request": {
 				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/article/{{thingId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"article",
+						"{{thingId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all members",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"memberId\", jsonData[0].id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/member?",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"member"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all groups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"groupÎd\", jsonData[0].id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/group",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"group"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get group by Id",
+			"request": {
+				"method": "GET",
 				"header": [
 					{
 						"key": "Authorization",
@@ -227,15 +335,41 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8081/product/{{thingId}}",
+					"raw": "http://localhost:8081/group/{{groupÎd}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8081",
 					"path": [
-						"product",
-						"{{thingId}}"
+						"group",
+						"{{groupÎd}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete group",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/group/{{groupÎd}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"group",
+						"{{groupÎd}}"
 					]
 				}
 			},

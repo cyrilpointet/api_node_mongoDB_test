@@ -1,7 +1,7 @@
 {
   "apps" : [{
     "name"        : "Api",
-    "script"      : "./bin/www",
+    "script"      : "./build/main.bundle.js",
     "watch"       : "./",
     "ignore_watch" : ["./mongo", "./public"],
     "log_date_format"  : "YYYY-MM-DD HH:mm Z",

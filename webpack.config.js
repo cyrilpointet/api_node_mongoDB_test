@@ -20,7 +20,6 @@ Encore
      * Add 1 entry for each "page" of your app
      * (including one that's included on every page - e.g. "app")
      *
-     * Each entry will result in one JavaScript file (e.g. app.js)
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
     .addEntry('app', './resources/js/app.js')
@@ -55,23 +54,14 @@ Encore
     .configureBabel(function (babelConfig) {
         babelConfig.presets.push('@babel/preset-react');
     })
-
-// enables Sass/SCSS support
-//.enableSassLoader()
-
 // uncomment if you use TypeScript
 //.enableTypeScriptLoader()
-
-// uncomment to get integrity="..." attributes on your script & link tags
-// requires WebpackEncoreBundle 1.4 or higher
-//.enableIntegrityHashes(Encore.isProduction())
-
-// uncomment if you're having problems with a jQuery plugin
-//.autoProvidejQuery()
-
-// uncomment if you use API Platform Admin (composer require api-admin)
-//.enableReactPreset()
-//.addEntry('admin', './assets/Main.js')
 ;
 
-module.exports = Encore.getWebpackConfig();
+const firstConfig = Encore.getWebpackConfig();
+
+Encore.reset();
+
+const secondConfig = require('./webpack.api');
+
+module.exports = [firstConfig, secondConfig];
