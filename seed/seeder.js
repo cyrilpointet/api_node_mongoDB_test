@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
-const Product = require('../models/Product');
+const Article = require('../models/Article');
 const Member = require('../models/Member');
 const Group = require('../models/Group');
 const bcrypt = require('bcryptjs');
@@ -12,14 +12,13 @@ mongoose.connect('mongodb://localhost:27017', {
     pass: 'docker1234'
 });
 
-async function seedProducts() {
-    const products = await Product.find();
-    if (1 > products.length) {
+async function seedArticles() {
+    const articles = await Article.find();
+    if (1 > articles.length) {
         for (let i = 0; i < 20; i++) {
-            const product  = new Product({
-                title: `Product ${i}`,
-                description: `Description ${i}`,
-                price: i
+            const product  = new Article({
+                title: `Article ${i}`,
+                content: `Description ${i}`,
             })
             await product.save();
         }
@@ -105,7 +104,7 @@ async function seedAdmin() {
         });
         await user.save()
     }
-    await seedProducts();
+    await seedArticles();
     await seedGroups();
     await seedMembers();
     mongoose.disconnect();

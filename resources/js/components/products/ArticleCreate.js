@@ -1,17 +1,16 @@
 import * as React from "react";
 import {
-    Edit,
+    Create,
     SimpleForm,
     TextInput,
     NumberInput
 } from 'react-admin';
 
-export const ProductEdit = props => (
-    <Edit {...props}>
+export const ArticleCreate = props => (
+    <Create {...props}>
         <SimpleForm>
             <TextInput source="title" label="Titre" />
-            <TextInput source="description" label="Description" />
-            <NumberInput source="price" label="Prix" />
+            <TextInput source="content" label="Contenu" />
         </SimpleForm>
-    </Edit>
+    </Create>
 );

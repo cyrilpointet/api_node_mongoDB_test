@@ -6,7 +6,7 @@ const cors = require('cors');
 
 // Routes
 const indexRouter = require('./routes/index');
-const productRouter = require('./routes/productRouter');
+const productRouter = require('./routes/articleRouter');
 const usersRouter = require('./routes/userRouter');
 const membersRouter = require('./routes/memberRouter');
 const groupsRouter = require('./routes/groupRouter');
@@ -33,7 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
-app.use('/product', productRouter);
+app.use('/article', productRouter);
 app.use('/member', membersRouter);
 app.use('/group', groupsRouter);
 app.use(function(req, res, next) {

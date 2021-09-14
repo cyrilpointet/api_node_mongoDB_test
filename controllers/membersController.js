@@ -22,6 +22,7 @@ exports.getAllMembers = async (req, res, next) => {
 
 exports.getMemberById = (req, res, next) => {
     Member.findOne({ _id: req.params.id })
+        .populate('groups')
         .then(member => res.status(200).json(member))
         .catch(error => res.status(404).json({ error }));
 }

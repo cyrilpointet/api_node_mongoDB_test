@@ -5,9 +5,9 @@ import myDataProvider from './providers/dataProvider';
 import authProvider from './providers/authProvider';
 
 import Dashboard from './components/Dashboard';
-import {ProductList} from "./components/products/ProductList";
-import {ProductEdit} from "./components/products/ProductEdit";
-import {ProductCreate} from "./components/products/ProductCreate";
+import {ArticleList} from "./components/products/ArticleList";
+import {ArticleEdit} from "./components/products/ArticleEdit";
+import {ArticleCreate} from "./components/products/ArticleCreate";
 import {MemberList} from "./components/members/MemberList";
 import {MemberShow} from "./components/members/MemberShow";
 import {GroupShow} from "./components/groups/GroupShow";
@@ -18,7 +18,7 @@ const dataProvider = myDataProvider('http://localhost:8081');
 
 const Main = () => (
     <Admin dataProvider={dataProvider} dashboard={Dashboard} authProvider={authProvider}>
-        <Resource name="product" list={ProductList} edit={ProductEdit} create={ProductCreate} />
+        <Resource name="article" list={ArticleList} edit={ArticleEdit} create={ArticleCreate} />
         <Resource name="member" list={MemberList} show={MemberShow} />
         <Resource name="group" list={GroupList} show={GroupShow}  edit={GroupEdit} />
     </Admin>
