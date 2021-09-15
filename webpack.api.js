@@ -13,7 +13,10 @@ const {
 
 module.exports = {
     // our entry server file
-    entry: './server/www.js',
+    entry: {
+        main: './server/www.js',
+        seeder: './seed/seeder.js'
+    },
     // should be here so webpack knows that it handles node packages
     target: 'node',
     // mode can be production or development

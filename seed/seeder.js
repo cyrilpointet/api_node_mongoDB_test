@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
-const User = require('../models/User');
-const Article = require('../models/Article');
-const Member = require('../models/Member');
-const Group = require('../models/Group');
-const bcrypt = require('bcryptjs');
+import mongoose from 'mongoose';
+import bcryptjs from 'bcryptjs';
+import {User} from '../models/User';
+import {Article} from '../models/Article';
+import {Member} from '../models/Member';
+import {Group} from '../models/Group';
 
 mongoose.connect('mongodb://localhost:27017', {
     useNewUrlParser   : true,
@@ -97,7 +97,7 @@ async function seedGroups() {
 async function seedAdmin() {
     const admin = await User.findOne({email: 'admin@admin.admin'}).exec();
     if (null === admin) {
-        const hash = await bcrypt.hash('admin', 10);
+        const hash = await bcryptjs.hash('admin', 10);
         const user = new User({
             email: 'admin@admin.admin',
             password: hash
@@ -107,7 +107,7 @@ async function seedAdmin() {
     await seedArticles();
     await seedGroups();
     await seedMembers();
-    mongoose.disconnect();
+    await mongoose.disconnect();
 }
 
 seedAdmin();

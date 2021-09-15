@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server/www.js",
     "watch": "encore dev --watch",
-    "seed": "node ./seed/seeder.js",
+    "seed": "node ./build/seeder.bundle.js",
     "build-dev": "encore dev"
   },
   "dependencies": {
