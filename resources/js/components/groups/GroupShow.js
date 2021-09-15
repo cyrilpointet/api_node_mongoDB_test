@@ -1,14 +1,14 @@
-import {Show, SimpleShowLayout, TextField} from "react-admin";
+import { Show, SimpleShowLayout, TextField } from "react-admin";
 import * as React from "react";
-import {GroupMembers} from "./GroupMembers";
+import { GroupMembers } from "./GroupMembers";
 
-export const GroupShow = props => {
-    return (
-        <Show {...props}>
-            <SimpleShowLayout>
-                <TextField source="name" label="nom" />
-                <GroupMembers />
-            </SimpleShowLayout>
-        </Show>
-    )
-}
+export const GroupShow = (props) => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField source="name" label="nom" />
+        <GroupMembers />
+      </SimpleShowLayout>
+    </Show>
+  );
+};
