@@ -14,6 +14,11 @@ echo "
                          __/ |
                         |___/
 "
-echo "Server is running: http://localhost:8081"
+echo "Serveur is running: http://localhost:8081"
 
-docker-compose exec node yarn watch
+echo "Generating API doc"
+bin/apidoc.sh
+echo "API doc: http://localhost:8081/doc/"
+
+echo "Webpack is watching"
+bin/webpack_watch.sh

@@ -1,6 +1,37 @@
 import { Member } from "../models/Member";
 
 export const memberCtrl = {
+  /**
+   * @api {get} /member Récupérer tous les membres
+   * @apiName GetMembers
+   * @apiGroup Membre
+   *
+   * @apiSuccess {Object[]} member Liste des membres
+   * @apiSuccess {Object[]} member.group liste des groupes du membre.
+   * @apiSuccess {String} member._id Id du membre
+   * @apiSuccess {String} member.name Nom du membre
+   * @apiSuccess {String} member.email Email du membre
+   * @apiSuccess {String} member.id Id du membre (pour React Admin)
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *    [
+   *      {
+   *        "groups": [
+   *          {
+   *            "_id": "6141bbf815733f2443c93c54",
+   *            "name": "gryffondor",
+   *            "__v": 0,
+   *          }
+   *        ]
+   *        "_id": "6141bbf815733f2443c93c78",
+   *        "name": "Harry 0",
+   *        "email": "Harry_0@poudlard.com",
+   *        "__v": 0,
+   *        "id": "6141bbf815733f2443c93c78"
+   *      }
+   *    ]
+   */
   async getAllMembers(req, res) {
     try {
       const totalMembers = await Member.find().exec();
@@ -25,6 +56,33 @@ export const memberCtrl = {
     }
   },
 
+  /**
+   * @api {get} /member/:id Récupérer un membre par son Id
+   * @apiName GetMember
+   * @apiGroup Membre
+   *
+   * @apiSuccess {Object[]} member.group liste des groupes du membre.
+   * @apiSuccess {String} member._id Id du membre
+   * @apiSuccess {String} member.name Nom du membre
+   * @apiSuccess {String} member.email Email du membre
+   * @apiSuccess {String} member.id Id du membre (pour React Admin)
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "groups": [
+   *         {
+   *           "_id": "6141bbf815733f2443c93c54",
+   *           "name": "gryffondor",
+   *           "__v": 0,
+   *         }
+   *       "_id": "6141bbf815733f2443c93c78",
+   *       "name": "Harry 0",
+   *       "email": "Harry_0@poudlard.com",
+   *       "__v": 0,
+   *       "id": "6141bbf815733f2443c93c78"
+   *     }
+   */
   getMemberById(req, res) {
     Member.findOne({ _id: req.params.id })
       .populate("groups")

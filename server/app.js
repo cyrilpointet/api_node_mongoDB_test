@@ -6,6 +6,7 @@ import { mongodb } from "../db/mongo";
 
 // Routes
 import { indexRouter } from "../routes/index";
+import { docRouter } from "../routes/docRouter";
 import { userRouter } from "../routes/userRouter";
 import { articleRouter } from "../routes/articleRouter";
 import { memberRouter } from "../routes/memberRouter";
@@ -29,6 +30,7 @@ app.use(cookieParser());
 app.use(express.static("public"));
 
 app.use("/", indexRouter);
+app.use("/doc", docRouter);
 app.use("/user", userRouter);
 app.use("/article", articleRouter);
 app.use("/member", memberRouter);

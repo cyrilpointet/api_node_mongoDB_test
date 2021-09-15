@@ -5,11 +5,12 @@ import { Article } from "../models/Article";
 import { Member } from "../models/Member";
 import { Group } from "../models/Group";
 
-mongoose.connect("mongodb://localhost:27017", {
+mongoose.connect(process.env.URL_MONGO, {
   useNewUrlParser: true,
   dbName: "apinode",
   user: "api",
   pass: "docker1234",
+  useUnifiedTopology: true,
 });
 
 async function seedArticles() {
@@ -110,4 +111,10 @@ async function seedAdmin() {
   await mongoose.disconnect();
 }
 
-seedAdmin();
+seedAdmin()
+  .then(() => {
+    console.log("DB seeded");
+  })
+  .catch((e) => {
+    console.log(e.message);
+  });
