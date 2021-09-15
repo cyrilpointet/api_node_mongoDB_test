@@ -1,5 +1,5 @@
 #!/bin/bash -eu
 
-echo "Lauch webpack watcher"
+echo "Launch webpack watcher"
 
 docker-compose exec node yarn watch

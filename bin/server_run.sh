@@ -2,8 +2,6 @@
 
 docker-compose down
 
-docker-compose up
-
 echo "
   _  __         _
  | |/ /        (_)
@@ -15,3 +13,5 @@ echo "
                         |___/
 "
 echo "Server is running: http://localhost:8081"
+
+docker-compose up
