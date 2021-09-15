@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-const Member = mongoose.Schema({
+const MemberSchema = mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true },
     groups: [
@@ -11,12 +11,12 @@ const Member = mongoose.Schema({
     ]
 });
 
-Member.virtual('id').get(function(){
+MemberSchema.virtual('id').get(function(){
     return this._id.toHexString();
 });
 
-Member.set('toJSON', {
+MemberSchema.set('toJSON', {
     virtuals: true
 });
 
-module.exports = mongoose.model('Member', Member);
+export const Member = mongoose.model('Member', MemberSchema);

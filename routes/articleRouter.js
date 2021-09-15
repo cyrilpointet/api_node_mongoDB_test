@@ -1,17 +1,17 @@
-const express = require('express');
-const articlesRouter = express.Router();
+import express from 'express';
+import {auth} from '../middleware/auth';
+import {articlesCtrl} from '../controllers/articlesController';
 
-const auth = require('../middleware/auth');
-const articlesCtrl = require('../controllers/articlesController');
+const articleRouter = express.Router();
 
-articlesRouter.post('/', auth, articlesCtrl.createArticle)
+articleRouter.post('/', auth, articlesCtrl.createArticle)
 
-articlesRouter.get('/', auth, articlesCtrl.getAllArticles);
-articlesRouter.get('/:id', auth, articlesCtrl.getArticleById);
+articleRouter.get('/', auth, articlesCtrl.getAllArticles);
+articleRouter.get('/:id', auth, articlesCtrl.getArticleById);
 
-articlesRouter.put('/:id', auth, articlesCtrl.updateArticle);
+articleRouter.put('/:id', auth, articlesCtrl.updateArticle);
 
-articlesRouter.delete('/:id', auth, articlesCtrl.deleteArticle);
-articlesRouter.delete('/', auth, articlesCtrl.deleteManyArticles);
+articleRouter.delete('/:id', auth, articlesCtrl.deleteArticle);
+articleRouter.delete('/', auth, articlesCtrl.deleteManyArticles);
 
-export default articlesRouter;
+export {articleRouter};

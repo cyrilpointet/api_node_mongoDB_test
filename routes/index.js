@@ -1,10 +1,10 @@
 import express from 'express';
-const router = express.Router();
 import index from '../resources/html/index.html';
 
-router.get('/', function(req, res, next) {
+const indexRouter = express.Router();
+
+indexRouter.get('/', function(req, res, next) {
   res.sendFile(__dirname + "/" + index);
-  //res.json({})
 });
 
-export default router;
+export {indexRouter};

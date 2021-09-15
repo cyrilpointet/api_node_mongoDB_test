@@ -1,16 +1,16 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-const Article = mongoose.Schema({
+const ArticleSchema = mongoose.Schema({
     title: { type: String, required: true },
     content: { type: String, required: true },
 });
 
-Article.virtual('id').get(function(){
+ArticleSchema.virtual('id').get(function(){
     return this._id.toHexString();
 });
 
-Article.set('toJSON', {
+ArticleSchema.set('toJSON', {
     virtuals: true
 });
 
-module.exports = mongoose.model('Product', Article);
+export const Article = mongoose.model('Product', ArticleSchema);

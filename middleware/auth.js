@@ -1,10 +1,10 @@
-const jwt = require('jsonwebtoken');
-const User =require('../models/User');
+import jsonwebtoken from 'jsonwebtoken';
+import {User} from '../models/User';
 
-module.exports = async  (req, res, next) => {
+export const auth =  async  (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1];
-        const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+        const decodedToken = jsonwebtoken.verify(token, 'RANDOM_TOKEN_SECRET');
         const userId = decodedToken.userId;
         const user = await User.findById(userId);
         if (!user) {

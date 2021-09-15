@@ -1,10 +1,10 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+import {auth} from '../middleware/auth';
+import {memberCtrl} from '../controllers/membersController';
 
-const auth = require('../middleware/auth');
-const memberCtrl = require('../controllers/membersController');
+const memberRouter = express.Router();
 
-router.get('/', auth, memberCtrl.getAllMembers);
-router.get('/:id', auth, memberCtrl.getMemberById);
+memberRouter.get('/', auth, memberCtrl.getAllMembers);
+memberRouter.get('/:id', auth, memberCtrl.getMemberById);
 
-module.exports = router;
+export {memberRouter};

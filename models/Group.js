@@ -1,24 +1,24 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-const Group = mongoose.Schema({
+const GroupSchema = mongoose.Schema({
     name: { type: String, required: true },
 });
 
-Group.virtual('id').get(function(){
+GroupSchema.virtual('id').get(function(){
     return this._id.toHexString();
 });
 
-Group.virtual('members', {
+GroupSchema.virtual('members', {
     ref: 'Member',
     localField: '_id',
     foreignField: 'groups'
 });
 
-Group.set('toJSON', {
+GroupSchema.set('toJSON', {
     virtuals: true
 });
 
-Group.pre('remove', function(next){
+GroupSchema.pre('remove', function(next){
     this.model('Member').updateMany(
         {groups: {$in: [this._id]}},
         {$pull: {groups: this._id}},
@@ -26,4 +26,4 @@ Group.pre('remove', function(next){
     )
 });
 
-module.exports = mongoose.model('Group', Group);
+export const Group = mongoose.model('Group', GroupSchema);

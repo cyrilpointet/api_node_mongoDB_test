@@ -1,11 +1,11 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+import {auth} from '../middleware/auth';
+import {groupCtrl} from '../controllers/groupsController';
 
-const auth = require('../middleware/auth');
-const groupCtrl = require('../controllers/groupsController');
+const groupRouter = express.Router();
 
-router.get('/', auth, groupCtrl.getAllGroups);
-router.get('/:id', auth, groupCtrl.getGroupById);
-router.delete('/:id', auth, groupCtrl.deleteGroup);
+groupRouter.get('/', auth, groupCtrl.getAllGroups);
+groupRouter.get('/:id', auth, groupCtrl.getGroupById);
+groupRouter.delete('/:id', auth, groupCtrl.deleteGroup);
 
-module.exports = router;
+export {groupRouter};
