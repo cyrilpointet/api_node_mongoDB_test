@@ -52,9 +52,15 @@ module.exports = {
                 // Transpiles ES6-8 into ES5
                 test: /\.js$/,
                 exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader"
-                }
+                use: [
+                    {
+                        loader: "babel-loader"
+                    },
+                    {
+                        // eslint need to be on bottom as loaders are executed bottom-first
+                        loader: "eslint-loader",
+                    },
+                ],
             },
         ]
     }
