@@ -266,7 +266,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8081/member?",
+					"raw": "http://localhost:8081/member",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -274,12 +274,6 @@
 					"port": "8081",
 					"path": [
 						"member"
-					],
-					"query": [
-						{
-							"key": "",
-							"value": null
-						}
 					]
 				}
 			},
