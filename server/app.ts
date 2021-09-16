@@ -15,7 +15,7 @@ import { groupRouter } from "../routes/groupRouter";
 // DB
 mongodb.initClientDbConnection();
 
-const app = express();
+const app: express.Application = express();
 
 app.use(
   cors({

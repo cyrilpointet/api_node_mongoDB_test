@@ -16,7 +16,7 @@ import { GroupEdit } from "./components/groups/GroupEdit";
 
 const dataProvider = myDataProvider("http://localhost:8081");
 
-const Main = () => (
+const Main: React.FunctionComponent = () => (
   <Admin
     dataProvider={dataProvider}
     dashboard={Dashboard}
@@ -33,4 +33,4 @@ const Main = () => (
   </Admin>
 );
 
-export default Main;
+export { Main };
