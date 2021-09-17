@@ -1,8 +1,8 @@
 import React from "react";
 import { Admin, Resource } from "react-admin";
 
-import myDataProvider from "./providers/dataProvider";
-import authProvider from "./providers/authProvider";
+import { setDataProvider} from "./providers/dataProviderSetter";
+import { setAuthProvider } from "./providers/authProviderSetter";
 
 import { KeringDashbord } from "./components/KeringDashbord";
 import { ArticleList } from "./components/products/ArticleList";
@@ -14,7 +14,8 @@ import { GroupShow } from "./components/groups/GroupShow";
 import { GroupList } from "./components/groups/GroupList";
 import { GroupEdit } from "./components/groups/GroupEdit";
 
-const dataProvider = myDataProvider("http://localhost:8081");
+const dataProvider = setDataProvider("http://localhost:8081");
+const authProvider = setAuthProvider("http://localhost:8081");
 
 const Main: React.FunctionComponent = () => (
   <Admin

@@ -1,7 +1,7 @@
+import React from "react";
 import { Datagrid, List, TextField, EditButton } from "react-admin";
-import * as React from "react";
 
-export const ArticleList = (props) => {
+export const ArticleList: React.FunctionComponent = (props) => {
   return (
     <List {...props}>
       <Datagrid rowClick="edit">

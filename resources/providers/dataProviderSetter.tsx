@@ -1,7 +1,8 @@
 import { fetchUtils } from "ra-core";
+import { DataProvider } from "react-admin";
 
-export default (apiUrl) => {
-  const httpClient = (url, opt) => {
+export const setDataProvider = (apiUrl: string): DataProvider => {
+  const httpClient = (url, opt = {}) => {
     const options = {
       headers: new Headers({ Accept: "application/json" }),
       ...opt,

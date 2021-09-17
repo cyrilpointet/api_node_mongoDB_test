@@ -1,7 +1,7 @@
-import * as React from "react";
+import React from "react";
 import { Create, SimpleForm, TextInput } from "react-admin";
 
-export const ArticleCreate = (props) => (
+export const ArticleCreate: React.FunctionComponent = (props) => (
   <Create {...props}>
     <SimpleForm>
       <TextInput source="title" label="Titre" />
