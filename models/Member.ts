@@ -1,11 +1,11 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 
-const MemberSchema = mongoose.Schema({
+const MemberSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   groups: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Group",
     },
   ],
@@ -19,4 +19,4 @@ MemberSchema.set("toJSON", {
   virtuals: true,
 });
 
-export const Member = mongoose.model("Member", MemberSchema);
+export const Member = model("Member", MemberSchema);

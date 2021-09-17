@@ -1,20 +1,31 @@
+import express from "express";
 import { Group } from "../models/Group";
 
-export const groupCtrl = {
-  async getAllGroups(req, res) {
+type groupCtrlType = {
+  getAllGroups: (req: express.Request, res: express.Response) => Promise<void>;
+  getGroupById: (req: express.Request, res: express.Response) => void;
+  deleteGroup: (req: express.Request, res: express.Response) => Promise<void>;
+};
+
+export const groupCtrl: groupCtrlType = {
+  async getAllGroups(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
     try {
       const totalGroups = await Group.find().exec();
       const totalLength = totalGroups.length;
       const groups = await Group.find()
         .sort(
           req.query.sort
-            ? { [req.query.sort]: req.query.order === "ASC" ? 1 : -1 }
+            ? { [req.query.sort as string]: req.query.order === "ASC" ? 1 : -1 }
             : {}
         )
-        .limit(req.query.perPage ? parseInt(req.query.perPage) : 0)
+        .limit(req.query.perPage ? parseInt(req.query.perPage as string) : 0)
         .skip(
           req.query.page && req.query.perPage
-            ? (parseInt(req.query.page) - 1) * parseInt(req.query.perPage)
+            ? (parseInt(req.query.page as string) - 1) *
+                parseInt(req.query.perPage as string)
             : 0
         )
         .populate("members")
@@ -25,14 +36,17 @@ export const groupCtrl = {
     }
   },
 
-  getGroupById(req, res) {
+  getGroupById(req: express.Request, res: express.Response): void {
     Group.findOne({ _id: req.params.id })
       .populate("members")
       .then((group) => res.status(200).json(group))
       .catch((error) => res.status(404).json({ error }));
   },
 
-  async deleteGroup(req, res) {
+  async deleteGroup(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
     try {
       const group = await Group.findOne({ _id: req.params.id });
       const resp = await group.remove();

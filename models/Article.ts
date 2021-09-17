@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 
-const ArticleSchema = mongoose.Schema({
+const ArticleSchema = new Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
 });
@@ -13,4 +13,4 @@ ArticleSchema.set("toJSON", {
   virtuals: true,
 });
 
-export const Article = mongoose.model("Product", ArticleSchema);
+export const Article = model("Product", ArticleSchema);

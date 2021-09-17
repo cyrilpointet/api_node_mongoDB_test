@@ -1,6 +1,12 @@
+import express from "express";
 import { Member } from "../models/Member";
 
-export const memberCtrl = {
+type memberCtrlType = {
+  getAllMembers: (req: express.Request, res: express.Response) => Promise<void>;
+  getMemberById: (req: express.Request, res: express.Response) => void;
+};
+
+export const memberCtrl: memberCtrlType = {
   /**
    * @api {get} /member Récupérer tous les membres
    * @apiName GetMembers
@@ -32,20 +38,24 @@ export const memberCtrl = {
    *      }
    *    ]
    */
-  async getAllMembers(req, res) {
+  async getAllMembers(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
     try {
       const totalMembers = await Member.find().exec();
       const totalLength = totalMembers.length;
       const members = await Member.find()
         .sort(
           req.query.sort
-            ? { [req.query.sort]: req.query.order === "ASC" ? 1 : -1 }
+            ? { [req.query.sort as string]: req.query.order === "ASC" ? 1 : -1 }
             : {}
         )
-        .limit(req.query.perPage ? parseInt(req.query.perPage) : 0)
+        .limit(req.query.perPage ? parseInt(req.query.perPage as string) : 0)
         .skip(
           req.query.page && req.query.perPage
-            ? (parseInt(req.query.page) - 1) * parseInt(req.query.perPage)
+            ? (parseInt(req.query.page as string) - 1) *
+                parseInt(req.query.perPage as string)
             : 0
         )
         .populate("groups")
@@ -83,7 +93,7 @@ export const memberCtrl = {
    *       "id": "6141bbf815733f2443c93c78"
    *     }
    */
-  getMemberById(req, res) {
+  getMemberById(req: express.Request, res: express.Response): void {
     Member.findOne({ _id: req.params.id })
       .populate("groups")
       .then((member) => res.status(200).json(member))

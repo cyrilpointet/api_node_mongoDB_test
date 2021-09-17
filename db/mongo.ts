@@ -6,7 +6,7 @@ const clientOptions = {
 };
 
 export const mongodb = {
-  async initClientDbConnection() {
+  async initClientDbConnection(): Promise<void> {
     try {
       await mongoose.connect(process.env.URL_MONGO, clientOptions);
     } catch (error) {

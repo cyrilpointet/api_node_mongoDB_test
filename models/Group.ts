@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import { Schema, model, QueryOptions } from "mongoose";
 
-const GroupSchema = mongoose.Schema({
+const GroupSchema = new Schema({
   name: { type: String, required: true },
 });
 
@@ -18,7 +18,7 @@ GroupSchema.set("toJSON", {
   virtuals: true,
 });
 
-GroupSchema.pre("remove", function (next) {
+GroupSchema.pre("remove", function (next: QueryOptions) {
   this.model("Member").updateMany(
     { groups: { $in: [this._id] } },
     { $pull: { groups: this._id } },
@@ -26,4 +26,4 @@ GroupSchema.pre("remove", function (next) {
   );
 });
 
-export const Group = mongoose.model("Group", GroupSchema);
+export const Group = model("Group", GroupSchema);

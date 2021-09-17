@@ -1,8 +1,14 @@
 import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 import { User } from "../models/User";
+import express from "express";
 
-export const userCtrl = {
+type userCtrlType = {
+  signup: (req: express.Request, res: express.Response) => void;
+  login: (req: express.Request, res: express.Response) => void;
+};
+
+export const userCtrl: userCtrlType = {
   /**
    * @api {post} /user/signup Créer un nouvel administrateur
    * @apiName RegisterUser
@@ -23,7 +29,7 @@ export const userCtrl = {
    *        "__v": 0
    *    }
    */
-  signup(req, res) {
+  signup(req: express.Request, res: express.Response): void {
     bcrypt
       .hash(req.body.password, 10)
       .then((hash) => {
@@ -56,7 +62,7 @@ export const userCtrl = {
    *       "token": "2VySWQiOiI2MTNiNTBkMTI3NTI3ZTAyYzA4MDYzNzAiLCJpYXQiOjE2MzE3MTgyMzQsImV4cCI6MTYzMTgwN"
    *     }
    */
-  login(req, res) {
+  login(req: express.Request, res: express.Response): void {
     User.findOne({ email: req.body.email })
       .then((user) => {
         if (!user) {
