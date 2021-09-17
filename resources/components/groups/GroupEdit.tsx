@@ -1,7 +1,7 @@
+import React from "react";
 import { Show, SimpleForm, TextField } from "react-admin";
-import * as React from "react";
 
-export const GroupEdit = (props) => {
+export const GroupEdit: React.FunctionComponent = (props) => {
   return (
     <Show {...props}>
       <SimpleForm>

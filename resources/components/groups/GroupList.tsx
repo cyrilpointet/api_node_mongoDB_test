@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Datagrid,
   List,
@@ -5,19 +6,18 @@ import {
   FunctionField,
   EditButton,
 } from "react-admin";
-import * as React from "react";
 
-export const GroupList = (props) => {
-  const getMembersNames = (group) => {
-    let members = [];
-    if (group && group.members) {
-      group.members.forEach((member) => {
-        members.push(member.name);
-      });
-    }
-    return members.join("; ");
-  };
+const getMembersNames = (group) => {
+  const members = [];
+  if (group && group.members) {
+    group.members.forEach((member) => {
+      members.push(member.name);
+    });
+  }
+  return members.join("; ");
+};
 
+export const GroupList: React.FunctionComponent = (props) => {
   return (
     <List {...props}>
       <Datagrid rowClick="show">

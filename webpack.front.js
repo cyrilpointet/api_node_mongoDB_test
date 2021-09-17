@@ -3,7 +3,7 @@ var path = require("path");
 const { NODE_ENV = "production" } = process.env;
 
 var config = {
-  entry: [path.resolve(__dirname, "resources/js/app.tsx")],
+  entry: [path.resolve(__dirname, "resources/app.tsx")],
   output: {
     path: path.resolve(__dirname, "public/build"),
     filename: "app.js",

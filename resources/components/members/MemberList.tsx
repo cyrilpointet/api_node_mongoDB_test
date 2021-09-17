@@ -1,17 +1,17 @@
+import React from "react";
 import { Datagrid, FunctionField, List, TextField } from "react-admin";
-import * as React from "react";
 
-export const MemberList = (props) => {
-  const getGroupsNames = (member) => {
-    let groups = [];
-    if (member && member.groups) {
-      member.groups.forEach((group) => {
-        groups.push(group.name);
-      });
-    }
-    return groups.join("; ");
-  };
+const getGroupsNames = (member): string => {
+  const groups = [];
+  if (member && member.groups) {
+    member.groups.forEach((group) => {
+      groups.push(group.name);
+    });
+  }
+  return groups.join("; ");
+};
 
+export const MemberList: React.FunctionComponent = (props) => {
   return (
     <List {...props}>
       <Datagrid rowClick="show">

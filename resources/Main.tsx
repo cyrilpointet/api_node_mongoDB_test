@@ -1,10 +1,10 @@
-import * as React from "react";
+import React from "react";
 import { Admin, Resource } from "react-admin";
 
 import myDataProvider from "./providers/dataProvider";
 import authProvider from "./providers/authProvider";
 
-import Dashboard from "./components/Dashboard";
+import { KeringDashbord } from "./components/KeringDashbord";
 import { ArticleList } from "./components/products/ArticleList";
 import { ArticleEdit } from "./components/products/ArticleEdit";
 import { ArticleCreate } from "./components/products/ArticleCreate";
@@ -19,7 +19,7 @@ const dataProvider = myDataProvider("http://localhost:8081");
 const Main: React.FunctionComponent = () => (
   <Admin
     dataProvider={dataProvider}
-    dashboard={Dashboard}
+    dashboard={KeringDashbord}
     authProvider={authProvider}
   >
     <Resource

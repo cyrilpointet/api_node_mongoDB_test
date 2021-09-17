@@ -1,13 +1,14 @@
+import React from "react";
 import { Show, SimpleShowLayout, TextField } from "react-admin";
-import * as React from "react";
-import { GroupMembers } from "./GroupMembers";
+import { MembersGroups } from "./MemberGroups";
 
-export const GroupShow = (props) => {
+export const MemberShow: React.FunctionComponent = (props) => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
         <TextField source="name" label="nom" />
-        <GroupMembers />
+        <TextField source="email" label="email" />
+        <MembersGroups />
       </SimpleShowLayout>
     </Show>
   );

@@ -1,3 +1,4 @@
+import React from "react";
 import { useRecordContext } from "react-admin";
 import {
   List,
@@ -6,11 +7,10 @@ import {
   Typography,
   IconButton,
 } from "@material-ui/core";
-import * as React from "react";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import { useHistory } from "react-router-dom";
 
-export const MembersGroups = (props) => {
+export const MembersGroups: React.FunctionComponent = (props) => {
   const history = useHistory();
 
   const handleclick = function (id) {
@@ -23,7 +23,6 @@ export const MembersGroups = (props) => {
     member.groups.forEach((group) => {
       groups.push(
         <ListItem
-          variant="body2"
           key={group._id}
           button
           onClick={() => handleclick(group._id)}

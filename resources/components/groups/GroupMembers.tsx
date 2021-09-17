@@ -1,3 +1,4 @@
+import React from "react";
 import { useRecordContext } from "react-admin";
 import {
   Typography,
@@ -8,14 +9,11 @@ import {
   TableCell,
   TableBody,
 } from "@material-ui/core";
-import * as React from "react";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import { useHistory } from "react-router-dom";
-import { useState } from "react";
 
-export const GroupMembers = (props) => {
+export const GroupMembers: React.FunctionComponent = (props) => {
   const history = useHistory();
-  const [group] = useState(useRecordContext(props));
 
   const handleclick = function (id) {
     history.push(`/member/${id}/show`);
@@ -33,7 +31,7 @@ export const GroupMembers = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {group.members.map((member) => (
+            {useRecordContext(props).members.map((member) => (
               <TableRow
                 key={member._id}
                 onClick={() => handleclick(member._id)}
