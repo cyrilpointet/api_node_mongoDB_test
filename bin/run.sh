@@ -2,7 +2,10 @@
 
 docker-compose down
 
+ls -la .env
+
 docker-compose up -d
+docker-compose config
 
 echo "
   _  __         _

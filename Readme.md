@@ -1,7 +1,7 @@
 # Api REST Node & MongoDB + Admin
 
 ## Lancement
-Après le clonage, installer les dépendances : `yarn install`<br>
+Copier/coller **.env.dev.override** en le renommant **.env**<br>
 Lancer le projet : `bin/run.sh` <br>
 Remplir la base avec des fixtures pour avoir au moins un compte admin: `bin/seed_db.sh`
 

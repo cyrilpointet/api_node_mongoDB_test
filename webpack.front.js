@@ -1,6 +1,7 @@
+const webpack = require("webpack"); //to access built-in plugins
 var path = require("path");
 
-const { NODE_ENV = "production" } = process.env;
+const { NODE_ENV = "production", BASE_URL } = process.env;
 
 var config = {
   entry: [path.resolve(__dirname, "resources/app.tsx")],
@@ -10,6 +11,7 @@ var config = {
     clean: true,
   },
   mode: NODE_ENV,
+  devtool: "source-map",
   target: "web",
   resolve: {
     extensions: ["", ".js", ".jsx", ".ts", ".tsx"],
@@ -31,5 +33,14 @@ var config = {
       },
     ],
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      process: {
+        env: {
+          BASE_URL: JSON.stringify(BASE_URL),
+        },
+      },
+    }),
+  ],
 };
 module.exports = config;

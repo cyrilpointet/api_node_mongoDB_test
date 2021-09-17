@@ -5,13 +5,16 @@ import { Article } from "../models/Article";
 import { Member } from "../models/Member";
 import { Group } from "../models/Group";
 
-mongoose.connect(process.env.URL_MONGO, {
-  useNewUrlParser: true,
-  dbName: "apinode",
-  user: "api",
-  pass: "docker1234",
-  useUnifiedTopology: true,
-});
+mongoose.connect(
+  `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}`,
+  {
+    useNewUrlParser: true,
+    dbName: process.env.DB_NAME,
+    user: process.env.MONGO_INITDB_ROOT_USERNAME,
+    pass: process.env.MONGO_INITDB_ROOT_PASSWORD,
+    useUnifiedTopology: true,
+  }
+);
 
 async function seedArticles() {
   const articles = await Article.find();

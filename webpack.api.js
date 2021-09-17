@@ -19,8 +19,7 @@ module.exports = {
   target: "node",
   // mode can be production or development
   mode: NODE_ENV,
-  // enable watching only if it is development mode
-  watch: NODE_ENV === "development",
+  devtool: "source-map",
   externals: [nodeExternals()],
   // output path, i chose build but feel free to change it to anything
   // output file name [name]. means that it will create multiple code chunks for the build
