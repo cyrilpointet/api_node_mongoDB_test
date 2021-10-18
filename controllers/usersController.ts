@@ -16,6 +16,8 @@ export const userCtrl: userCtrlType = {
    *
    * @apiParam {String} email Users unique email.
    * @apiParam {String} password password.
+   * @apiParam {String} firstName User firstName.
+   * @apiParam {String} lastName User lastName.
    *
    * @apiSuccess {String} userId User id.
    * @apiSuccess {String} token jwt.
@@ -35,6 +37,8 @@ export const userCtrl: userCtrlType = {
       .then((hash) => {
         const user = new User({
           email: req.body.email,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
           password: hash,
         });
         user

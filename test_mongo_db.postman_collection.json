@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"email\": \"toto@toto.toto\",\n    \"password\": \"toto\"\n}",
+					"raw": "{\n    \"email\": \"toto@toto.toto\",\n    \"password\": \"toto\",\n    \"firstName\": \"TotoFirstName\",\n    \"lastName\": \"TotoLastName\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

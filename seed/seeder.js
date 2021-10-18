@@ -5,16 +5,13 @@ import { Article } from "../models/Article";
 import { Member } from "../models/Member";
 import { Group } from "../models/Group";
 
-mongoose.connect(
-  `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}`,
-  {
-    useNewUrlParser: true,
-    dbName: process.env.DB_NAME,
-    user: process.env.MONGO_INITDB_ROOT_USERNAME,
-    pass: process.env.MONGO_INITDB_ROOT_PASSWORD,
-    useUnifiedTopology: true,
-  }
-);
+mongoose.connect(process.env.URL_MONGO, {
+  useNewUrlParser: true,
+  dbName: process.env.DB_NAME,
+  user: process.env.MONGO_INITDB_ROOT_USERNAME,
+  pass: process.env.MONGO_INITDB_ROOT_PASSWORD,
+  useUnifiedTopology: true,
+});
 
 async function seedArticles() {
   const articles = await Article.find();
@@ -99,15 +96,26 @@ async function seedGroups() {
 }
 
 async function seedAdmin() {
-  const admin = await User.findOne({ email: "admin@admin.admin" }).exec();
-  if (null === admin) {
-    const hash = await bcryptjs.hash("admin", 10);
-    const user = new User({
-      email: "admin@admin.admin",
-      password: hash,
-    });
-    await user.save();
+  try {
+    const users = await User.find();
+    for (let i = 0; i < users.length; i++) {
+      users[i].remove();
+    }
+    const admin = await User.findOne({ email: "admin@admin.admin" }).exec();
+    if (null === admin) {
+      const hash = await bcryptjs.hash("admin", 10);
+      const user = new User({
+        email: "admin@admin.admin",
+        password: hash,
+        firstName: "admin",
+        lastName: "admin",
+      });
+      await user.save();
+    }
+  } catch (e) {
+    console.log(e);
   }
+
   await seedArticles();
   await seedGroups();
   await seedMembers();
