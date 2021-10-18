@@ -1,5 +1,6 @@
 import React from "react";
 import { Datagrid, FunctionField, List, TextField } from "react-admin";
+import { Avatar } from "@material-ui/core";
 
 const getGroupsNames = (member): string => {
   const groups = [];
@@ -15,6 +16,10 @@ export const MemberList: React.FunctionComponent = (props) => {
   return (
     <List {...props}>
       <Datagrid rowClick="show">
+        <FunctionField
+          label="Groupes"
+          render={(member) => <Avatar src={member.pictureLink} />}
+        />
         <TextField source="name" label="Nom" />
         <TextField source="email" label="Email" />
         <FunctionField

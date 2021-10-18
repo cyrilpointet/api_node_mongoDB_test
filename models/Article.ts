@@ -3,6 +3,7 @@ import { Schema, model } from "mongoose";
 const ArticleSchema = new Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
+  test: { type: String, default: null },
 });
 
 ArticleSchema.virtual("id").get(function () {

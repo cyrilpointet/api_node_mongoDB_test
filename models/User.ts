@@ -6,6 +6,8 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
+  createdAt: { type: Date, required: true, default: new Date() },
+  updatedAt: { type: Date, required: true, default: new Date() },
 });
 
 UserSchema.plugin(uniqueValidator);
