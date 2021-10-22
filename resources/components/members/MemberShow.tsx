@@ -13,6 +13,7 @@ export const MemberShow: React.FunctionComponent = (props) => {
         />
         <TextField source="name" label="nom" />
         <TextField source="email" label="email" />
+        <TextField source="department" label="department" />
         <MembersGroups />
       </SimpleShowLayout>
     </Show>

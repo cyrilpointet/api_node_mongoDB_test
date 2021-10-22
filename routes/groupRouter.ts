@@ -6,6 +6,7 @@ const groupRouter = express.Router();
 
 groupRouter.get("/", auth, groupCtrl.getAllGroups);
 groupRouter.get("/:id", auth, groupCtrl.getGroupById);
+groupRouter.put("/:id", auth, groupCtrl.updateGroup);
 groupRouter.delete("/:id", auth, groupCtrl.deleteGroup);
 
 export { groupRouter };

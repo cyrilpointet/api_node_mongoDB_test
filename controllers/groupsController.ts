@@ -4,6 +4,7 @@ import { Group } from "../models/Group";
 type groupCtrlType = {
   getAllGroups: (req: express.Request, res: express.Response) => Promise<void>;
   getGroupById: (req: express.Request, res: express.Response) => void;
+  updateGroup: (req: express.Request, res: express.Response) => Promise<void>;
   deleteGroup: (req: express.Request, res: express.Response) => Promise<void>;
 };
 
@@ -54,5 +55,17 @@ export const groupCtrl: groupCtrlType = {
     } catch (error) {
       res.status(400).json({ error });
     }
+  },
+
+  async updateGroup(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
+    const updatedGroup = await Group.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body },
+      { new: true }
+    ).exec();
+    res.status(200).json(updatedGroup);
   },
 };

@@ -3,6 +3,7 @@ import { Member } from "../models/Member";
 
 type memberCtrlType = {
   getAllMembers: (req: express.Request, res: express.Response) => Promise<void>;
+  updateMember: (req: express.Request, res: express.Response) => Promise<void>;
   getMemberById: (req: express.Request, res: express.Response) => void;
 };
 
@@ -98,5 +99,46 @@ export const memberCtrl: memberCtrlType = {
       .populate("groups")
       .then((member) => res.status(200).json(member))
       .catch((error) => res.status(404).json({ error }));
+  },
+
+  /**
+   * @api {put} /member/:id Update un membre par son Id
+   * @apiName updateMember
+   * @apiGroup Membre
+   *
+   * @apiQuery {Object}  Un objet member (voir model)
+   *
+   * @apiSuccess {Object[]} member.group liste des groupes du membre.
+   * @apiSuccess {String} member._id Id du membre
+   * @apiSuccess {String} member.name Nom du membre
+   * @apiSuccess {String} member.email Email du membre
+   * @apiSuccess {String} member.id Id du membre (pour React Admin)
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "groups": [
+   *         {
+   *           "_id": "6141bbf815733f2443c93c54",
+   *           "name": "gryffondor",
+   *           "__v": 0,
+   *         }
+   *       "_id": "6141bbf815733f2443c93c78",
+   *       "name": "Harry 0",
+   *       "email": "Harry_0@poudlard.com",
+   *       "__v": 0,
+   *       "id": "6141bbf815733f2443c93c78"
+   *     }
+   */
+  async updateMember(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
+    const updatedMember = await Member.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body },
+      { new: true }
+    ).exec();
+    res.status(200).json(updatedMember);
   },
 };
