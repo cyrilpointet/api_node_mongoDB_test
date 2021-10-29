@@ -14,6 +14,7 @@ export const seedFeeds = async () => {
       type: "coucou",
       group: members[i].groups[0],
       author: members[i]._id,
+      pictureLink: "https://picsum.photos/300",
     });
     await feed.save();
   }

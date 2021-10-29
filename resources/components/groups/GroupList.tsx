@@ -18,7 +18,7 @@ const getMembersCount = (group): string => {
 
 export const GroupList: React.FunctionComponent = (props) => {
   return (
-    <List {...props}>
+    <List {...props} bulkActionButtons={false}>
       <Datagrid rowClick="show">
         <TextField source="name" label="Name" />
         <DateField source="createdAt" label="Created at" locales="fr-FR" />

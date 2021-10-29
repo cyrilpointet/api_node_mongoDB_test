@@ -12,6 +12,8 @@ import { MemberList } from "./components/members/MemberList";
 import { MemberShow } from "./components/members/MemberShow";
 import { GroupShow } from "./components/groups/GroupShow";
 import { GroupList } from "./components/groups/GroupList";
+import { FeedList } from "./components/feeds/FeedList";
+import { FeedShow } from "./components/feeds/FeedShow";
 
 const BASE_URL = process.env.BASE_URL;
 const dataProvider = setDataProvider(BASE_URL);
@@ -31,6 +33,7 @@ const Main: React.FunctionComponent = () => (
     {/*/>*/}
     <Resource name="member" list={MemberList} show={MemberShow} />
     <Resource name="group" list={GroupList} show={GroupShow} />
+    <Resource name="feed" list={FeedList} show={FeedShow} />
   </Admin>
 );
 

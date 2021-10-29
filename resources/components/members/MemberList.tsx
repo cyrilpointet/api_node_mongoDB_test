@@ -18,10 +18,10 @@ const getFeedsCount = (member): string => {
 
 export const MemberList: React.FunctionComponent = (props) => {
   return (
-    <List {...props}>
+    <List {...props} bulkActionButtons={false}>
       <Datagrid rowClick="show">
         <FunctionField
-          label="Groupes"
+          label="Avatar"
           render={(member) => <Avatar src={member.pictureLink} />}
         />
         <TextField source="name" label="Name" />
