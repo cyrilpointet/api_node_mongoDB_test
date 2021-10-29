@@ -11,6 +11,7 @@ import { userRouter } from "../routes/userRouter";
 import { articleRouter } from "../routes/articleRouter";
 import { memberRouter } from "../routes/memberRouter";
 import { groupRouter } from "../routes/groupRouter";
+import { feedRouter } from "../routes/feedRouter";
 
 // DB
 mongodb.initClientDbConnection();
@@ -29,12 +30,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static("public"));
 
+// Routers
 app.use("/", indexRouter);
 app.use("/doc", docRouter);
 app.use("/user", userRouter);
 app.use("/article", articleRouter);
 app.use("/member", memberRouter);
 app.use("/group", groupRouter);
+app.use("/feed", feedRouter);
 app.use(function (req, res) {
   res
     .status(404)

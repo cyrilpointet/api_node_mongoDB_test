@@ -1,4 +1,4 @@
-import { Schema, model, QueryOptions } from "mongoose";
+import { Schema, model } from "mongoose";
 
 const FeedSchema = new Schema({
   type: { type: String, required: true },
@@ -27,22 +27,6 @@ FeedSchema.set("toJSON", {
   virtuals: true,
 });
 
-// Suppression des entrées dans les relations au delete ---------------
-FeedSchema.pre("remove", function (next: QueryOptions) {
-  this.model("Member").updateMany(
-    { feeds: { $in: [this._id] } },
-    { $pull: { feeds: this._id } },
-    next
-  );
-});
-
-FeedSchema.pre("remove", function (next: QueryOptions) {
-  this.model("Group").updateMany(
-    { feeds: { $in: [this._id] } },
-    { $pull: { feeds: this._id } },
-    next
-  );
-});
 //--------------------------------------------------
 
 export const Feed = model("Feed", FeedSchema);

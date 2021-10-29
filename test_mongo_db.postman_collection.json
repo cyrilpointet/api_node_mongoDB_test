@@ -186,7 +186,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"content\": \"Description updated\"\n}",
+					"raw": "{\n    \"content\": \"Description updated\",\n    \"test\": null\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -280,6 +280,32 @@
 			"response": []
 		},
 		{
+			"name": "Get member by Id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/member/{{memberId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"member",
+						"{{memberId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get all groups",
 			"event": [
 				{
@@ -344,9 +370,22 @@
 			"response": []
 		},
 		{
-			"name": "Delete group",
+			"name": "Get all feeds",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"feedId\", jsonData[0].id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
-				"method": "DELETE",
+				"method": "GET",
 				"header": [
 					{
 						"key": "Authorization",
@@ -355,15 +394,40 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8081/group/{{groupÎd}}",
+					"raw": "http://localhost:8081/feed",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8081",
 					"path": [
-						"group",
-						"{{groupÎd}}"
+						"feed"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get feed by Id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/feed/{{feedId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"feed",
+						"{{feedId}}"
 					]
 				}
 			},
