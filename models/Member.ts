@@ -7,9 +7,8 @@ const MemberSchema = new Schema({
   primaryAddress: { type: String, default: null },
   hasCustomPicture: { type: Boolean, default: false },
   pictureLink: { type: String, required: true },
-  //accountClaimTime: { type: Date, required: true },
-  accountClaimTime: { type: Date, default: null }, // todo => voir cette valeur
-  active: { type: Boolean, default: false },
+  accountClaimTime: { type: Date, required: true, default: new Date() },
+  active: { type: Boolean, required: true, default: true },
   groups: [
     {
       type: Schema.Types.ObjectId,

@@ -1,15 +1,19 @@
 import React from "react";
-import { Datagrid, FunctionField, List, TextField } from "react-admin";
+import {
+  BooleanField,
+  Datagrid,
+  FunctionField,
+  List,
+  TextField,
+} from "react-admin";
 import { Avatar } from "@material-ui/core";
 
-const getGroupsNames = (member): string => {
-  const groups = [];
-  if (member && member.groups) {
-    member.groups.forEach((group) => {
-      groups.push(group.name);
-    });
-  }
-  return groups.join("; ");
+const getGroupsCount = (member): string => {
+  return member.groups.length;
+};
+
+const getFeedsCount = (member): string => {
+  return member.feeds.length;
 };
 
 export const MemberList: React.FunctionComponent = (props) => {
@@ -20,12 +24,18 @@ export const MemberList: React.FunctionComponent = (props) => {
           label="Groupes"
           render={(member) => <Avatar src={member.pictureLink} />}
         />
-        <TextField source="name" label="Nom" />
+        <TextField source="name" label="Name" />
         <TextField source="email" label="Email" />
+        <TextField source="department" label="Department" />
         <FunctionField
-          label="Groupes"
-          render={(member) => getGroupsNames(member)}
+          label="Groups count"
+          render={(member) => getGroupsCount(member)}
         />
+        <FunctionField
+          label="Feeds count"
+          render={(member) => getFeedsCount(member)}
+        />
+        <BooleanField source="active" label="Active" />
       </Datagrid>
     </List>
   );

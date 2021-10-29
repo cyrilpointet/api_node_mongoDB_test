@@ -1,5 +1,11 @@
 import React from "react";
-import { FunctionField, Show, SimpleShowLayout, TextField } from "react-admin";
+import {
+  BooleanField,
+  FunctionField,
+  Show,
+  SimpleShowLayout,
+  TextField,
+} from "react-admin";
 import { MembersGroups } from "./MemberGroups";
 import { Avatar } from "@material-ui/core";
 
@@ -14,6 +20,7 @@ export const MemberShow: React.FunctionComponent = (props) => {
         <TextField source="name" label="nom" />
         <TextField source="email" label="email" />
         <TextField source="department" label="department" />
+        <BooleanField source="hasCustomPicture" label="has custom picture" />
         <MembersGroups />
       </SimpleShowLayout>
     </Show>

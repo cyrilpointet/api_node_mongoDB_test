@@ -2,6 +2,11 @@ import { Schema, model, QueryOptions } from "mongoose";
 
 const GroupSchema = new Schema({
   name: { type: String, required: true },
+  description: { type: String, default: null },
+  privacy: { type: String, required: true, default: "CLOSED" },
+  createdAt: { type: Date, required: true, default: new Date() },
+  updatedAt: { type: Date, required: true, default: new Date() },
+  active: { type: Boolean, required: true, default: true },
 });
 
 // Virtuals -------------------------------------------

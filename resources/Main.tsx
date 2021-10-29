@@ -12,7 +12,6 @@ import { MemberList } from "./components/members/MemberList";
 import { MemberShow } from "./components/members/MemberShow";
 import { GroupShow } from "./components/groups/GroupShow";
 import { GroupList } from "./components/groups/GroupList";
-import { GroupEdit } from "./components/groups/GroupEdit";
 
 const BASE_URL = process.env.BASE_URL;
 const dataProvider = setDataProvider(BASE_URL);
@@ -31,7 +30,7 @@ const Main: React.FunctionComponent = () => (
     {/*  create={ArticleCreate}*/}
     {/*/>*/}
     <Resource name="member" list={MemberList} show={MemberShow} />
-    <Resource name="group" list={GroupList} show={GroupShow} edit={GroupEdit} />
+    <Resource name="group" list={GroupList} show={GroupShow} />
   </Admin>
 );
 

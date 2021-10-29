@@ -4,29 +4,33 @@ import {
   List,
   TextField,
   FunctionField,
-  EditButton,
+  DateField,
+  BooleanField,
 } from "react-admin";
 
-const getMembersNames = (group) => {
-  const members = [];
-  if (group && group.members) {
-    group.members.forEach((member) => {
-      members.push(member.name);
-    });
-  }
-  return members.join("; ");
+const getFeedsCount = (group): string => {
+  return group.feeds.length;
+};
+
+const getMembersCount = (group): string => {
+  return group.members.length;
 };
 
 export const GroupList: React.FunctionComponent = (props) => {
   return (
     <List {...props}>
       <Datagrid rowClick="show">
-        <TextField source="name" label="Nom" />
+        <TextField source="name" label="Name" />
+        <DateField source="createdAt" label="Created at" locales="fr-FR" />
         <FunctionField
-          label="Membres"
-          render={(group) => getMembersNames(group)}
+          label="Members count"
+          render={(group) => getMembersCount(group)}
         />
-        <EditButton />
+        <FunctionField
+          label="Feeds count"
+          render={(group) => getFeedsCount(group)}
+        />
+        <BooleanField source="active" label="Active" />
       </Datagrid>
     </List>
   );
