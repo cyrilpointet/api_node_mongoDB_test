@@ -18,10 +18,18 @@ const MemberSchema = new Schema({
   ],
 });
 
+// Virtuals -------------------------------------------
 MemberSchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
+MemberSchema.virtual("feeds", {
+  ref: "Feed",
+  localField: "_id",
+  foreignField: "author",
+});
+
+// Setters -------------------------------------------
 MemberSchema.set("toJSON", {
   virtuals: true,
 });

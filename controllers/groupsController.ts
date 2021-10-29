@@ -1,5 +1,6 @@
 import express from "express";
 import { Group } from "../models/Group";
+import { Feed } from "../models/Feed";
 
 type groupCtrlType = {
   getAllGroups: (req: express.Request, res: express.Response) => Promise<void>;
@@ -30,6 +31,7 @@ export const groupCtrl: groupCtrlType = {
             : 0
         )
         .populate("members")
+        .populate({ path: "feeds", model: Feed })
         .exec();
       res.status(200).set("X-Total-Count", totalLength).json(groups);
     } catch (e) {
@@ -40,6 +42,7 @@ export const groupCtrl: groupCtrlType = {
   getGroupById(req: express.Request, res: express.Response): void {
     Group.findOne({ _id: req.params.id })
       .populate("members")
+      .populate({ path: "feeds", model: Feed })
       .then((group) => res.status(200).json(group))
       .catch((error) => res.status(404).json({ error }));
   },
