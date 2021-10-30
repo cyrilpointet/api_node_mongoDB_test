@@ -32,12 +32,18 @@ export const groupCtrl: groupCtrlType = {
     }
   },
 
-  getGroupById(req: express.Request, res: express.Response): void {
-    Group.findOne({ _id: req.params.id })
-      .populate("members")
-      .populate({ path: "feeds", model: Feed })
-      .then((group) => res.status(200).json(group))
-      .catch((error) => res.status(404).json({ error }));
+  async getGroupById(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
+    try {
+      const group = await Group.findOne({ _id: req.params.id })
+        .populate("members")
+        .populate({ path: "feeds", model: Feed });
+      res.status(200).json(group);
+    } catch (e) {
+      res.status(404).json({ error: e.message });
+    }
   },
 
   async deleteGroup(

@@ -31,12 +31,18 @@ export const memberCtrl: memberCtrlType = {
     }
   },
 
-  getMemberById(req: express.Request, res: express.Response): void {
-    Member.findOne({ _id: req.params.id })
-      .populate("groups")
-      .populate({ path: "feeds", model: Feed })
-      .then((member) => res.status(200).json(member))
-      .catch((error) => res.status(404).json({ error }));
+  async getMemberById(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
+    try {
+      const member = await Member.findOne({ _id: req.params.id })
+        .populate("groups")
+        .populate({ path: "feeds", model: Feed });
+      res.status(200).json(member);
+    } catch (e) {
+      res.status(404).json({ e });
+    }
   },
 
   async updateMember(

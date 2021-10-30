@@ -8,7 +8,10 @@ export const seedMembers = async () => {
     members[i].remove();
   }
 
-  const newMembers = await axios.get("https://randomuser.me/api/?results=750");
+  const membersCount = 125;
+  const newMembers = await axios.get(
+    `https://randomuser.me/api/?results=${membersCount}`
+  );
   const groups = await Group.find();
 
   for (let i = 0; i < newMembers.data.results.length; i++) {

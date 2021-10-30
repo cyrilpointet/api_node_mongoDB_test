@@ -15,15 +15,20 @@ type articlesCtrlType = {
 };
 
 export const articlesCtrl: articlesCtrlType = {
-  createArticle(req: express.Request, res: express.Response): void {
-    delete req.body._id;
-    const product = new Article({
-      ...req.body,
-    });
-    product
-      .save()
-      .then(() => res.status(201).json(product))
-      .catch((error) => res.status(400).json({ error }));
+  async createArticle(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
+    try {
+      delete req.body._id;
+      const product = new Article({
+        ...req.body,
+      });
+      await product.save();
+      res.status(201).json(product);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
   },
 
   async getAllArticles(
@@ -45,10 +50,16 @@ export const articlesCtrl: articlesCtrlType = {
     }
   },
 
-  getArticleById(req: express.Request, res: express.Response): void {
-    Article.findOne({ _id: req.params.id })
-      .then((product) => res.status(200).json(product))
-      .catch((error) => res.status(404).json({ error }));
+  async getArticleById(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
+    try {
+      const product = await Article.findOne({ _id: req.params.id });
+      res.status(200).json(product);
+    } catch (e) {
+      res.status(404).json({ error: e.message });
+    }
   },
 
   async updateArticle(
@@ -63,19 +74,31 @@ export const articlesCtrl: articlesCtrlType = {
     res.status(200).json(updatedArticle);
   },
 
-  deleteArticle(req: express.Request, res: express.Response): void {
-    Article.deleteOne({ _id: req.params.id })
-      .then((resp) => res.status(200).json(resp))
-      .catch((error) => res.status(400).json({ error }));
+  async deleteArticle(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
+    try {
+      const resp = await Article.deleteOne({ _id: req.params.id });
+      res.status(200).json(resp);
+    } catch (e) {
+      res.status(400).json({ error: e.message });
+    }
   },
 
-  deleteManyArticles(req: express.Request, res: express.Response): void {
-    Article.deleteMany({
-      _id: {
-        $in: req.body.ids,
-      },
-    })
-      .then(() => res.status(200).json(req.body.ids))
-      .catch((error) => res.status(400).json({ error }));
+  async deleteManyArticles(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
+    try {
+      await Article.deleteMany({
+        _id: {
+          $in: req.body.ids,
+        },
+      });
+      res.status(200).json(req.body.ids);
+    } catch (e) {
+      res.status(400).json({ error: e.message });
+    }
   },
 };

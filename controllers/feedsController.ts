@@ -29,9 +29,15 @@ export const feedsController: feedsCtrlType = {
     }
   },
 
-  getFeedById(req: express.Request, res: express.Response): void {
-    Feed.findOne({ _id: req.params.id })
-      .then((product) => res.status(200).json(product))
-      .catch((error) => res.status(404).json({ error }));
+  async getFeedById(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
+    try {
+      const feed = await Feed.findOne({ _id: req.params.id });
+      res.status(200).json(feed);
+    } catch (e) {
+      res.status(404).json({ error: e.message });
+    }
   },
 };
