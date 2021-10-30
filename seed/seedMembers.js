@@ -21,8 +21,16 @@ export const seedMembers = async () => {
       pictureLink: newMembers.data.results[i].picture.thumbnail,
       department: newMembers.data.results[i].location.city,
     });
-    const randomGroupNumber = Math.floor(Math.random() * 4);
-    member.groups.push(groups[randomGroupNumber]._id);
+
+    // Ajout des groupes
+    let joinedGroups = [];
+    for (let i = 0; i < Math.ceil(Math.random() * 4); i++) {
+      const randomGroupIndex = Math.floor(Math.random() * 4);
+      if (-1 === joinedGroups.indexOf(randomGroupIndex)) {
+        member.groups.push(groups[randomGroupIndex]._id);
+        joinedGroups.push(randomGroupIndex);
+      }
+    }
     await member.save();
   }
 };
