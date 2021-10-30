@@ -19,8 +19,11 @@ export const setDataProvider = (apiUrl: string): DataProvider => {
     getList: (resource, params) => {
       const { page, perPage } = params.pagination;
       const { field, order } = params.sort;
+      const { filter } = params;
 
-      const query = `page=${page}&perPage=${perPage}&sort=${field}&order=${order}`;
+      const query = `page=${page}&perPage=${perPage}&sort=${field}&order=${order}&filter=${JSON.stringify(
+        filter
+      )}`;
 
       const url = `${apiUrl}/${resource}?${query}`;
       return httpClient(url).then(({ headers, json }) => {

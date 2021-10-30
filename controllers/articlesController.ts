@@ -1,5 +1,6 @@
 import express from "express";
 import { Article } from "../models/Article";
+import { QueryHelper } from "../services/QueryHelper";
 
 type articlesCtrlType = {
   createArticle: (req: express.Request, res: express.Response) => void;
@@ -30,23 +31,15 @@ export const articlesCtrl: articlesCtrlType = {
     res: express.Response
   ): Promise<void> {
     try {
-      const totalArticles = await Article.find().exec();
-      const totalLength = totalArticles.length;
-      const products = await Article.find()
-        .sort(
-          req.query.sort
-            ? { [req.query.sort as string]: req.query.order === "ASC" ? 1 : -1 }
-            : {}
-        )
-        .limit(req.query.perPage ? parseInt(req.query.perPage as string) : 0)
-        .skip(
-          req.query.page && req.query.perPage
-            ? (parseInt(req.query.page as string) - 1) *
-                parseInt(req.query.perPage as string)
-            : 0
-        )
+      const totalItemsCount = await Article.find(
+        QueryHelper.getQueryFilters(req)
+      ).count();
+      const products = await Article.find(QueryHelper.getQueryFilters(req))
+        .sort(QueryHelper.getQuerySort(req))
+        .limit(QueryHelper.getQueryLimit(req))
+        .skip(QueryHelper.getQuerySkip(req))
         .exec();
-      res.status(200).set("X-Total-Count", totalLength).json(products);
+      res.status(200).set("X-Total-Count", totalItemsCount).json(products);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

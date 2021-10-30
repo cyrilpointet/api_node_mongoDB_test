@@ -1,6 +1,7 @@
 import express from "express";
 import { Group } from "../models/Group";
 import { Feed } from "../models/Feed";
+import { QueryHelper } from "../services/QueryHelper";
 
 type groupCtrlType = {
   getAllGroups: (req: express.Request, res: express.Response) => Promise<void>;
@@ -15,25 +16,17 @@ export const groupCtrl: groupCtrlType = {
     res: express.Response
   ): Promise<void> {
     try {
-      const totalGroups = await Group.find().exec();
-      const totalLength = totalGroups.length;
-      const groups = await Group.find()
-        .sort(
-          req.query.sort
-            ? { [req.query.sort as string]: req.query.order === "ASC" ? 1 : -1 }
-            : {}
-        )
-        .limit(req.query.perPage ? parseInt(req.query.perPage as string) : 0)
-        .skip(
-          req.query.page && req.query.perPage
-            ? (parseInt(req.query.page as string) - 1) *
-                parseInt(req.query.perPage as string)
-            : 0
-        )
+      const totalItemsCount = await Group.find(
+        QueryHelper.getQueryFilters(req)
+      ).count();
+      const groups = await Group.find(QueryHelper.getQueryFilters(req))
+        .sort(QueryHelper.getQuerySort(req))
+        .limit(QueryHelper.getQueryLimit(req))
+        .skip(QueryHelper.getQuerySkip(req))
         .populate("members")
         .populate({ path: "feeds", model: Feed })
         .exec();
-      res.status(200).set("X-Total-Count", totalLength).json(groups);
+      res.status(200).set("X-Total-Count", totalItemsCount).json(groups);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

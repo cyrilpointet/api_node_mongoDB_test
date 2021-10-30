@@ -1,5 +1,6 @@
 import express from "express";
 import { Feed } from "../models/Feed";
+import { QueryHelper } from "../services/QueryHelper";
 
 type feedsCtrlType = {
   getAllFeeds: (req: express.Request, res: express.Response) => Promise<void>;
@@ -12,25 +13,17 @@ export const feedsController: feedsCtrlType = {
     res: express.Response
   ): Promise<void> {
     try {
-      const totalFeeds = await Feed.find().exec();
-      const totalLength = totalFeeds.length;
-      const products = await Feed.find()
-        .sort(
-          req.query.sort
-            ? { [req.query.sort as string]: req.query.order === "ASC" ? 1 : -1 }
-            : {}
-        )
-        .limit(req.query.perPage ? parseInt(req.query.perPage as string) : 0)
-        .skip(
-          req.query.page && req.query.perPage
-            ? (parseInt(req.query.page as string) - 1) *
-                parseInt(req.query.perPage as string)
-            : 0
-        )
+      const totalItemsCount = await Feed.find(
+        QueryHelper.getQueryFilters(req)
+      ).count();
+      const products = await Feed.find(QueryHelper.getQueryFilters(req))
+        .sort(QueryHelper.getQuerySort(req))
+        .limit(QueryHelper.getQueryLimit(req))
+        .skip(QueryHelper.getQuerySkip(req))
         .populate("author")
         .populate("group")
         .exec();
-      res.status(200).set("X-Total-Count", totalLength).json(products);
+      res.status(200).set("X-Total-Count", totalItemsCount).json(products);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

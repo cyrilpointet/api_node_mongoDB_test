@@ -5,6 +5,7 @@ import {
   FunctionField,
   List,
   TextField,
+  TextInput,
 } from "react-admin";
 import { Avatar } from "@material-ui/core";
 
@@ -16,9 +17,14 @@ const getFeedsCount = (member): string => {
   return member.feeds.length;
 };
 
+const postFilters = [
+  <TextInput label="name" source="name" alwaysOn key={"name"} />,
+  <TextInput label="email" source="email" alwaysOn key={"email"} />,
+];
+
 export const MemberList: React.FunctionComponent = (props) => {
   return (
-    <List {...props} bulkActionButtons={false}>
+    <List {...props} bulkActionButtons={false} filters={postFilters}>
       <Datagrid rowClick="show">
         <FunctionField
           label="Avatar"
