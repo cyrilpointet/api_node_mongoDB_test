@@ -1,6 +1,17 @@
-import axios from "axios";
+import { LoremIpsum } from "lorem-ipsum";
 import { Member } from "../models/Member";
 import { Feed } from "../models/Feed";
+
+const lorem = new LoremIpsum({
+  sentencesPerParagraph: {
+    max: 6,
+    min: 2,
+  },
+  wordsPerSentence: {
+    max: 12,
+    min: 4,
+  },
+});
 
 export const seedFeeds = async () => {
   const feeds = await Feed.find();
@@ -9,18 +20,14 @@ export const seedFeeds = async () => {
   }
 
   const members = await Member.find();
-  const rawText = await axios.get(
-    "https://baconipsum.com/api/?type=meat-and-filler&paras=1"
-  );
-  const text = rawText.data[0];
 
   for (let i = 0; i < members.length; i++) {
     const feed = new Feed({
       type: "coucou",
       group: members[i].groups[0],
       author: members[i]._id,
-      message: text.substr(1, 100),
-      story: text.substr(1, 40),
+      message: lorem.generateParagraphs(1),
+      story: lorem.generateParagraphs(1),
       pictureLink: `https://picsum.photos/${
         Math.floor(Math.random() * 200) + 100
       }/${Math.floor(Math.random() * 200) + 100}`,
