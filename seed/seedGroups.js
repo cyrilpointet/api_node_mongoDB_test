@@ -1,4 +1,4 @@
-import { Group } from "../models/Group";
+import { Group } from "../server/models/Group";
 
 export const seedGroups = async () => {
   const groups = await Group.find();

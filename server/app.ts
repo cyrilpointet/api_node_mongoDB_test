@@ -2,16 +2,16 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import cors from "cors";
-import { mongodb } from "../db/mongo";
+import { mongodb } from "./db/mongo";
 
 // Routes
-import { indexRouter } from "../routes/index";
-import { docRouter } from "../routes/docRouter";
-import { userRouter } from "../routes/userRouter";
-import { articleRouter } from "../routes/articleRouter";
-import { memberRouter } from "../routes/memberRouter";
-import { groupRouter } from "../routes/groupRouter";
-import { feedRouter } from "../routes/feedRouter";
+import { indexRouter } from "./routes/index";
+import { docRouter } from "./routes/docRouter";
+import { userRouter } from "./routes/userRouter";
+import { articleRouter } from "./routes/articleRouter";
+import { memberRouter } from "./routes/memberRouter";
+import { groupRouter } from "./routes/groupRouter";
+import { feedRouter } from "./routes/feedRouter";
 
 // DB
 mongodb.initClientDbConnection();

@@ -1,6 +1,6 @@
 import axios from "axios";
-import { Member } from "../models/Member";
-import { Group } from "../models/Group";
+import { Member } from "../server/models/Member";
+import { Group } from "../server/models/Group";
 
 export const seedMembers = async () => {
   const members = await Member.find();

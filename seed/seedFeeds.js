@@ -1,6 +1,6 @@
 import { LoremIpsum } from "lorem-ipsum";
-import { Member } from "../models/Member";
-import { Feed } from "../models/Feed";
+import { Member } from "../server/models/Member";
+import { Feed } from "../server/models/Feed";
 
 const lorem = new LoremIpsum({
   sentencesPerParagraph: {

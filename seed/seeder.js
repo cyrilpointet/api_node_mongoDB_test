@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Article } from "../models/Article";
+import { Article } from "../server/models/Article";
 import { seedFeeds } from "./seedFeeds";
 import { seedMembers } from "./seedMembers";
 import { seedAdmin } from "./seedAdmin";
