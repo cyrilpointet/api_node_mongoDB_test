@@ -23,5 +23,4 @@ echo "Generating API doc"
 bin/apidoc.sh
 echo "API doc: http://localhost:8081/doc/"
 
-echo "Webpack is watching"
 bin/webpack_watch.sh

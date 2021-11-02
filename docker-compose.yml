@@ -17,6 +17,9 @@ services:
       - DB_NAME=${DB_NAME}
       - BASE_URL=${BASE_URL}
       - NODE_ENV=${NODE_ENV}
+      - OG_BASE_URL=${OG_BASE_URL}
+      - KERING_APP_TOKEN=${KERING_APP_TOKEN}
+      - KERING_OG_ID=${KERING_OG_ID}
 
   mongo:
     image: mongo:4.0
