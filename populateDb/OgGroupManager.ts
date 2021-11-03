@@ -31,14 +31,17 @@ export class OgGroupManager {
         try {
           const updatedGroup = await this.upsertGroup(groups[i]);
           await OgMemberManager.populateGroupMembers(updatedGroup);
+          console.log(
+            `Group "${updatedGroup.name}" has been successfully updated`
+          );
         } catch (e) {
           reject(e);
         }
       }
 
-      if (resp.paging?.cursors?.after) {
+      if (resp.paging.next) {
         try {
-          //await this.populateGroups(url, resp.paging.cursors.after);
+          await this.populateGroups(url, resp.paging.cursors.after);
           resolve();
         } catch (e) {
           reject(e);

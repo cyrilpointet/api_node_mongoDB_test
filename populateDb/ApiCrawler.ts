@@ -29,7 +29,19 @@ export class ApiCrawler {
         ogResponse = data;
         //console.log(`Got ${ogResponse.data.length} entries`);
       } catch (e) {
-        reject(e);
+        const newLimit = Math.floor(limit / 2);
+        if (newLimit < 1) {
+          reject(e);
+          return;
+        } else {
+          const resp = await this.getDataFromWpApi(
+            url,
+            newLimit,
+            fields,
+            after
+          );
+          resolve(resp);
+        }
       }
       resolve(ogResponse);
     });

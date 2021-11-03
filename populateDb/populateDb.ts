@@ -2,9 +2,8 @@
 
 import mongoose from "mongoose";
 import { OgGroupManager } from "./OgGroupManager";
-// import axios from "axios";
-// import { getMembersFromWp } from "./getMembersFromWp";
-// import { seedAdmin } from "../seed/seedAdmin";
+
+import { seedAdmin } from "../seed/seedAdmin";
 
 mongoose.connect(process.env.URL_MONGO, {
   useNewUrlParser: true,
@@ -19,8 +18,8 @@ async function populateDb(): Promise<void> {
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     try {
+      await seedAdmin();
       await OgGroupManager.populateGroups(process.env.KERING_OG_ID + "/groups");
-      // await seedAdmin();
       await mongoose.disconnect();
       resolve();
     } catch (e) {

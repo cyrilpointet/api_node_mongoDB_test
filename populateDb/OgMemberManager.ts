@@ -62,9 +62,11 @@ export class OgMemberManager {
         }
       }
 
-      if (resp.paging?.cursors?.after) {
+      console.log(`${members.length} members updated`);
+
+      if (resp.paging.next) {
         try {
-          await this.crawlGroupMembers(url, resp.paging.cursors.after);
+          await this.crawlGroupMembers(groupId, url, resp.paging.cursors.after);
           resolve();
         } catch (e) {
           reject(e);
