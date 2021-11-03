@@ -14,24 +14,23 @@ const lorem = new LoremIpsum({
 });
 
 export const seedFeeds = async () => {
-  const feeds = await Feed.find();
-  for (let i = 0; i < feeds.length; i++) {
-    feeds[i].remove();
-  }
+  await Feed.deleteMany({});
 
   const members = await Member.find();
 
   for (let i = 0; i < members.length; i++) {
     const feed = new Feed({
+      ogId: "temp",
       type: "coucou",
       group: members[i].groups[0],
-      author: members[i]._id,
+      author: members[i],
       message: lorem.generateParagraphs(1),
       story: lorem.generateParagraphs(1),
       pictureLink: `https://picsum.photos/${
         Math.floor(Math.random() * 200) + 100
       }/${Math.floor(Math.random() * 200) + 100}`,
     });
+    feed.ogId = feed._id;
     await feed.save();
   }
 };

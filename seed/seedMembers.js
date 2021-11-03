@@ -3,10 +3,7 @@ import { Member } from "../server/models/Member";
 import { Group } from "../server/models/Group";
 
 export const seedMembers = async () => {
-  const members = await Member.find();
-  for (let i = 0; i < members.length; i++) {
-    members[i].remove();
-  }
+  await Member.deleteMany({});
 
   const membersCount = 125;
   const newMembers = await axios.get(
@@ -16,18 +13,20 @@ export const seedMembers = async () => {
 
   for (let i = 0; i < newMembers.data.results.length; i++) {
     const member = new Member({
+      ogId: "temp",
       name: `${newMembers.data.results[i].name.last} ${newMembers.data.results[i].name.first}`,
       email: newMembers.data.results[i].email,
       pictureLink: newMembers.data.results[i].picture.thumbnail,
       department: newMembers.data.results[i].location.city,
     });
+    member.ogId = member._id;
 
     // Ajout des groupes
     let joinedGroups = [];
     for (let i = 0; i < Math.ceil(Math.random() * 4); i++) {
       const randomGroupIndex = Math.floor(Math.random() * 4);
       if (-1 === joinedGroups.indexOf(randomGroupIndex)) {
-        member.groups.push(groups[randomGroupIndex]._id);
+        member.groups.push(groups[randomGroupIndex]);
         joinedGroups.push(randomGroupIndex);
       }
     }

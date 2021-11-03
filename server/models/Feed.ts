@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const FeedSchema = new Schema({
+  ogId: { type: String, required: true, unique: true },
   type: { type: String, required: true },
   story: { type: String, default: null },
   message: { type: String, default: null },

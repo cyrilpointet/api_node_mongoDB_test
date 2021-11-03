@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const clientOptions = {
   useNewUrlParser: true,
-  dbName: "apinode",
+  dbName: process.env.DB_NAME,
 };
 
 export const mongodb = {

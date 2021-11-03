@@ -14,6 +14,7 @@ module.exports = {
   entry: {
     main: "./server/www.js",
     seeder: "./seed/seeder.js",
+    populateDb: "./populateDb/populateDb.js",
   },
   // should be here so webpack knows that it handles node packages
   target: "node",
