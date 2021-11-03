@@ -12,30 +12,15 @@ mongoose.connect(process.env.URL_MONGO, {
   user: process.env.MONGO_INITDB_ROOT_USERNAME,
   pass: process.env.MONGO_INITDB_ROOT_PASSWORD,
   useUnifiedTopology: true,
+  useFindAndModify: false,
 });
-
-const GROUP_PARAMS = [
-  "name",
-  "description",
-  "created_time",
-  "privacy",
-  "archived",
-  "updated_time",
-];
 
 async function populateDb(): Promise<void> {
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
-    const url = new URL(
-      process.env.KERING_OG_ID + "/groups",
-      process.env.OG_BASE_URL
-    );
-    url.searchParams.set("limit", "500");
-    url.searchParams.set("fields", GROUP_PARAMS.join());
     try {
-      await OgGroupManager.populateGroups(url);
+      await OgGroupManager.populateGroups(process.env.KERING_OG_ID + "/groups");
       // await seedAdmin();
-      // await getMembersFromWp();
       await mongoose.disconnect();
       resolve();
     } catch (e) {

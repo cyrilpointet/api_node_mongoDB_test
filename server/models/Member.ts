@@ -3,7 +3,7 @@ import { Schema, model } from "mongoose";
 const MemberSchema = new Schema({
   ogId: { type: String, required: true, unique: true },
   name: { type: String, required: true },
-  email: { type: String, required: true },
+  email: { type: String, default: null },
   department: { type: String, default: null },
   primaryAddress: { type: String, default: null },
   hasCustomPicture: { type: Boolean, default: false },

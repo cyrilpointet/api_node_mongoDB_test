@@ -1,55 +1,55 @@
 /* eslint-disable no-async-promise-executor */
 
-import { QueryWithHelpers } from "mongoose";
 import { ApiCrawler } from "./ApiCrawler";
 import { Group } from "../server/models/Group";
+import { OgMemberManager } from "./OgMemberManager";
+
+const GROUP_PARAMS = [
+  "name",
+  "description",
+  "created_time",
+  "privacy",
+  "archived",
+  "updated_time",
+];
 
 export class OgGroupManager {
-  public static populateGroups(url: URL): Promise<void> {
+  public static populateGroups(
+    url: string,
+    after: string | null = null
+  ): Promise<void> {
     return new Promise(async (resolve, reject) => {
       let resp = null;
       try {
-        resp = await ApiCrawler.getDataFromWpApi(url);
+        resp = await ApiCrawler.getDataFromWpApi(url, 500, GROUP_PARAMS, after);
       } catch (e) {
         reject(e);
       }
 
       const groups = resp.data;
-      let newGroupsCount = 0;
-      let updatedGroupsCount = 0;
       for (let i = 0; i < groups.length; i++) {
-        const updatedGroup = await this.upsertGroup(groups[i]);
-        if (updatedGroup.lastErrorObject.updatedExisting) {
-          updatedGroupsCount++;
-        } else {
-          newGroupsCount++;
+        try {
+          const updatedGroup = await this.upsertGroup(groups[i]);
+          await OgMemberManager.populateGroupMembers(updatedGroup);
+        } catch (e) {
+          reject(e);
         }
       }
 
-      if (resp.paging.next) {
-        console.log(
-          `${updatedGroupsCount} groups updated, ${newGroupsCount} groups added, continue`
-        );
-        const nextUrl = new URL(resp.paging.next);
+      if (resp.paging?.cursors?.after) {
         try {
-          await this.populateGroups(nextUrl);
+          //await this.populateGroups(url, resp.paging.cursors.after);
           resolve();
         } catch (e) {
-          console.log("error populateGroups retry");
           reject(e);
         }
       } else {
-        console.log(
-          `${updatedGroupsCount} groups updated, ${newGroupsCount} groups added, finished`
-        );
         resolve();
       }
     });
   }
 
-  private static upsertGroup(
-    rawGroup: Record<string, any>
-  ): Promise<QueryWithHelpers<any, any>> {
+  private static upsertGroup(rawGroup: Record<string, any>): Promise<Group> {
     return new Promise(async (resolve, reject) => {
       try {
         const filter = { ogId: rawGroup.id };
@@ -68,7 +68,6 @@ export class OgGroupManager {
           {
             new: true,
             upsert: true,
-            rawResult: true,
           }
         );
         resolve(updatedGroup);
