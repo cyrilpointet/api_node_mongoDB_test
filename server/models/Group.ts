@@ -39,6 +39,11 @@ GroupSchema.pre("remove", function (next: QueryOptions) {
     { $pull: { groups: this._id } },
     next
   );
+  this.model("Feed").updateMany(
+    { group: this._id },
+    { $pull: { group: this._id } },
+    next
+  );
 });
 
 export const Group = model("Group", GroupSchema);

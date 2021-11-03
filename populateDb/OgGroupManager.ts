@@ -3,6 +3,7 @@
 import { ApiCrawler } from "./ApiCrawler";
 import { Group } from "../server/models/Group";
 import { OgMemberManager } from "./OgMemberManager";
+import { OgFeedManager } from "./OgFeedManager";
 
 const GROUP_PARAMS = [
   "name",
@@ -21,7 +22,7 @@ export class OgGroupManager {
     return new Promise(async (resolve, reject) => {
       let resp = null;
       try {
-        resp = await ApiCrawler.getDataFromWpApi(url, 500, GROUP_PARAMS, after);
+        resp = await ApiCrawler.getDataFromWpApi(url, 10, GROUP_PARAMS, after);
       } catch (e) {
         reject(e);
       }
@@ -31,6 +32,7 @@ export class OgGroupManager {
         try {
           const updatedGroup = await this.upsertGroup(groups[i]);
           await OgMemberManager.populateGroupMembers(updatedGroup);
+          await OgFeedManager.populateGroupFeeds(updatedGroup);
           console.log(
             `Group "${updatedGroup.name}" has been successfully updated`
           );
@@ -41,7 +43,7 @@ export class OgGroupManager {
 
       if (resp.paging.next) {
         try {
-          await this.populateGroups(url, resp.paging.cursors.after);
+          //await this.populateGroups(url, resp.paging.cursors.after);
           resolve();
         } catch (e) {
           reject(e);
@@ -60,8 +62,8 @@ export class OgGroupManager {
           name: rawGroup.name,
           description: rawGroup.description ? rawGroup.description : null,
           privacy: rawGroup.privacy,
-          created_time: rawGroup.created_time,
-          updated_time: rawGroup.updated_time,
+          createdAt: rawGroup.created_time,
+          updatedAt: rawGroup.updated_time,
           archived: rawGroup.archived,
           ogId: rawGroup.id,
         };

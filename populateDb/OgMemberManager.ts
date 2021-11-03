@@ -18,7 +18,7 @@ export class OgMemberManager {
   public static populateGroupMembers(group: Group): Promise<void> {
     return new Promise(async (resolve, reject) => {
       // Supprime le groupe de la liste des groupes de tous les membres
-      Member.updateMany(
+      await Member.updateMany(
         { groups: { $in: [group._id] } },
         { $pull: { groups: group._id } }
       );
@@ -54,9 +54,7 @@ export class OgMemberManager {
       const members = resp.data;
       for (let i = 0; i < members.length; i++) {
         try {
-          const updatedMember = await this.upsertMember(members[i]);
-          updatedMember.groups.push(groupId);
-          await updatedMember.save();
+          await this.upsertMember(members[i], groupId);
         } catch (e) {
           reject(e);
         }
@@ -77,7 +75,10 @@ export class OgMemberManager {
     });
   }
 
-  private static upsertMember(rawMember: Record<string, any>): Promise<Member> {
+  private static upsertMember(
+    rawMember: Record<string, any>,
+    groupId: string
+  ): Promise<Member> {
     return new Promise(async (resolve, reject) => {
       try {
         const filter = { ogId: rawMember.id };
@@ -97,6 +98,8 @@ export class OgMemberManager {
             upsert: true,
           }
         );
+        updatedMember.groups.push(groupId);
+        await updatedMember.save();
         resolve(updatedMember);
       } catch (e) {
         reject(e);

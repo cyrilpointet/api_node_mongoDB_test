@@ -7,13 +7,25 @@ export class ApiCrawler {
     url: string,
     limit: number,
     fields: string[],
-    after?: string
+    after?: string,
+    since?: string,
+    until?: string,
+    pagingToken?: string
   ): Promise<Record<string, any>> {
     const constructedUrl = new URL(url, process.env.OG_BASE_URL);
     constructedUrl.searchParams.set("limit", limit.toString());
     constructedUrl.searchParams.set("fields", fields.join());
     if (after) {
       constructedUrl.searchParams.set("after", after);
+    }
+    if (since) {
+      constructedUrl.searchParams.set("since", since);
+    }
+    if (until) {
+      constructedUrl.searchParams.set("until", until);
+    }
+    if (pagingToken) {
+      constructedUrl.searchParams.set("__paging_token", pagingToken);
     }
     return new Promise(async (resolve, reject) => {
       let ogResponse = null;
