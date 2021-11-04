@@ -3,6 +3,7 @@
 import { ApiCrawler } from "./ApiCrawler";
 import { Group } from "../server/models/Group";
 import { Member } from "../server/models/Member";
+import { ogMemberType } from "./ApiTypes";
 
 const MEMBERS_PARAMS = [
   "email",
@@ -39,6 +40,7 @@ export class OgMemberManager {
   ): Promise<void> {
     return new Promise(async (resolve, reject) => {
       let resp = null;
+      process.stdout.write(".");
       try {
         resp = await ApiCrawler.getDataFromWpApi(
           url,
@@ -60,8 +62,6 @@ export class OgMemberManager {
         }
       }
 
-      console.log(`${members.length} members updated`);
-
       if (resp.paging.next) {
         try {
           await this.crawlGroupMembers(groupId, url, resp.paging.cursors.after);
@@ -70,13 +70,14 @@ export class OgMemberManager {
           reject(e);
         }
       } else {
+        console.log(" done");
         resolve();
       }
     });
   }
 
   private static upsertMember(
-    rawMember: Record<string, any>,
+    rawMember: ogMemberType,
     groupId: string
   ): Promise<Member> {
     return new Promise(async (resolve, reject) => {
@@ -88,6 +89,10 @@ export class OgMemberManager {
           pictureLink: rawMember.picture.data.url,
           department: rawMember.department,
           primaryAddress: rawMember.primary_address,
+          accountClaimTime: rawMember.account_claim_time
+            ? rawMember.account_claim_time
+            : null,
+          active: rawMember.active,
           ogId: rawMember.id,
         };
         const updatedMember = await Member.findOneAndUpdate(

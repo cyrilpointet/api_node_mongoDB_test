@@ -1,6 +1,11 @@
 /* eslint-disable no-async-promise-executor */
 
 import axios from "axios";
+import {
+  ogFeedRouteResponseType,
+  ogGroupRouteResponseType,
+  ogMemberRouteResponseType,
+} from "./ApiTypes";
 
 export class ApiCrawler {
   public static getDataFromWpApi(
@@ -11,7 +16,11 @@ export class ApiCrawler {
     since?: string,
     until?: string,
     pagingToken?: string
-  ): Promise<Record<string, any>> {
+  ): Promise<
+    | ogFeedRouteResponseType
+    | ogGroupRouteResponseType
+    | ogMemberRouteResponseType
+  > {
     const constructedUrl = new URL(url, process.env.OG_BASE_URL);
     constructedUrl.searchParams.set("limit", limit.toString());
     constructedUrl.searchParams.set("fields", fields.join());

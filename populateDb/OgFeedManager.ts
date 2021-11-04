@@ -4,6 +4,7 @@ import { ApiCrawler } from "./ApiCrawler";
 import { Group } from "../server/models/Group";
 import { Feed } from "../server/models/Feed";
 import { Member } from "../server/models/Member";
+import { ogFeedRouteResponseType, ogFeedType } from "./ApiTypes";
 
 const FEED_PARAMS = [
   "from",
@@ -38,7 +39,8 @@ export class OgFeedManager {
     pagingToken: string | null = null
   ): Promise<void> {
     return new Promise(async (resolve, reject) => {
-      let resp = null;
+      let resp: ogFeedRouteResponseType;
+      process.stdout.write(".");
       try {
         resp = await ApiCrawler.getDataFromWpApi(
           url,
@@ -64,9 +66,7 @@ export class OgFeedManager {
         }
       }
 
-      console.log(`${feeds.length} feeds updated`);
-
-      if (resp.paging?.next) {
+      if (resp.paging) {
         try {
           const parsedUrl = new URL(resp.paging.next);
           const newSince = parsedUrl.searchParams.get("since");
@@ -84,14 +84,14 @@ export class OgFeedManager {
           reject(e);
         }
       } else {
-        console.log("final: ", resp);
+        console.log(" done");
         resolve();
       }
     });
   }
 
   private static upsertFeed(
-    rawFeed: Record<string, any>,
+    rawFeed: ogFeedType,
     groupId: string
   ): Promise<Feed> {
     return new Promise(async (resolve, reject) => {
@@ -101,7 +101,7 @@ export class OgFeedManager {
           type: rawFeed.type,
           story: rawFeed.story ? rawFeed.story : null,
           message: rawFeed.message,
-          pictureLink: rawFeed.full_picture,
+          pictureLink: rawFeed.full_picture ? rawFeed.full_picture : null,
           createdAt: rawFeed.created_time,
           updatedAt: rawFeed.updated_time,
           ogId: rawFeed.id,

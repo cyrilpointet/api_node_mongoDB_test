@@ -8,7 +8,7 @@ const MemberSchema = new Schema({
   primaryAddress: { type: String, default: null },
   hasCustomPicture: { type: Boolean, default: false },
   pictureLink: { type: String, required: true },
-  accountClaimTime: { type: Date, required: true, default: new Date() },
+  accountClaimTime: { type: Date, default: null },
   active: { type: Boolean, required: true, default: true },
   groups: [
     {
