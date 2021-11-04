@@ -12,4 +12,14 @@ const UserSchema = new Schema({
 
 UserSchema.plugin(uniqueValidator);
 
+// Virtuals -------------------------------------------
+UserSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+// Setters -------------------------------------------
+UserSchema.set("toJSON", {
+  virtuals: true,
+});
+
 export const User = model("User", UserSchema);

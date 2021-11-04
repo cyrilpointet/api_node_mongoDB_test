@@ -6,35 +6,6 @@
 	},
 	"item": [
 		{
-			"name": "Signup user",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"email\": \"toto@toto.toto\",\n    \"password\": \"toto\",\n    \"firstName\": \"TotoFirstName\",\n    \"lastName\": \"TotoLastName\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8081/user/signup",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"user",
-						"signup"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Login user",
 			"event": [
 				{
@@ -54,7 +25,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"email\": \"toto@toto.toto\",\n    \"password\": \"toto\"\n}",
+					"raw": "{\n    \"email\": \"admin@admin.admin\",\n    \"password\": \"admin\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -71,6 +42,60 @@
 					"path": [
 						"user",
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"toto@toto.toto\",\n    \"password\": \"toto\",\n    \"firstName\": \"TotoFirstName\",\n    \"lastName\": \"TotoLastName\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/user/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all users",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"user"
 					]
 				}
 			},
