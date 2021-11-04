@@ -1,46 +1,46 @@
 import express from "express";
-import { Feed } from "../models/Feed";
 import { Comment } from "../models/Comment";
 import { QueryHelper } from "../services/QueryHelper";
 
 type feedsCtrlType = {
-  getAllFeeds: (req: express.Request, res: express.Response) => Promise<void>;
-  getFeedById: (req: express.Request, res: express.Response) => void;
+  getAllComments: (
+    req: express.Request,
+    res: express.Response
+  ) => Promise<void>;
+  getCommentById: (req: express.Request, res: express.Response) => void;
 };
 
-export const feedsController: feedsCtrlType = {
-  async getAllFeeds(
+export const commentsController: feedsCtrlType = {
+  async getAllComments(
     req: express.Request,
     res: express.Response
   ): Promise<void> {
     try {
-      const totalItemsCount = await Feed.find(
+      const totalItemsCount = await Comment.find(
         QueryHelper.getQueryFilters(req)
       ).count();
-      const feeds = await Feed.find(QueryHelper.getQueryFilters(req))
+      const comments = await Comment.find(QueryHelper.getQueryFilters(req))
         .sort(QueryHelper.getQuerySort(req))
         .limit(QueryHelper.getQueryLimit(req))
         .skip(QueryHelper.getQuerySkip(req))
         .populate("author")
-        .populate("group")
-        .populate({ path: "comments", model: Comment })
+        .populate("feed")
         .exec();
-      res.status(200).set("X-Total-Count", totalItemsCount).json(feeds);
+      res.status(200).set("X-Total-Count", totalItemsCount).json(comments);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
   },
 
-  async getFeedById(
+  async getCommentById(
     req: express.Request,
     res: express.Response
   ): Promise<void> {
     try {
-      const feed = await Feed.findOne({ _id: req.params.id }).populate({
-        path: "comments",
-        model: Comment,
-      });
-      res.status(200).json(feed);
+      const comment = await Comment.findOne({ _id: req.params.id })
+        .populate("author")
+        .populate("feed");
+      res.status(200).json(comment);
     } catch (e) {
       res.status(404).json({ error: e.message });
     }

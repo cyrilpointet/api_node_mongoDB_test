@@ -12,6 +12,7 @@ import { articleRouter } from "./routes/articleRouter";
 import { memberRouter } from "./routes/memberRouter";
 import { groupRouter } from "./routes/groupRouter";
 import { feedRouter } from "./routes/feedRouter";
+import { commentRouter } from "./routes/commentRouter";
 
 // DB
 mongodb.initClientDbConnection();
@@ -38,6 +39,7 @@ app.use("/article", articleRouter);
 app.use("/member", memberRouter);
 app.use("/group", groupRouter);
 app.use("/feed", feedRouter);
+app.use("/comment", commentRouter);
 app.use(function (req, res) {
   res
     .status(404)
