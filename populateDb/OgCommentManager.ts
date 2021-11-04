@@ -87,10 +87,13 @@ export class OgCommentManager {
     return new Promise(async (resolve, reject) => {
       try {
         const filter = { ogId: rawComment.id };
+        const author = await Member.findOne({ ogId: rawComment.from.id });
         const updatedValues = {
           message: rawComment.message,
           createdAt: rawComment.created_time,
           ogId: rawComment.id,
+          author: author._id,
+          feed: feedId,
         };
         const updatedComment = await Comment.findOneAndUpdate(
           filter,
@@ -100,10 +103,6 @@ export class OgCommentManager {
             upsert: true,
           }
         );
-        const author = await Member.find({ ogId: rawComment.from.id });
-        updatedComment.author = author.id;
-        updatedComment.feed = feedId;
-        await updatedComment.save();
         resolve(updatedComment);
       } catch (e) {
         reject(e);

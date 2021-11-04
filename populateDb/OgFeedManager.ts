@@ -98,6 +98,7 @@ export class OgFeedManager {
       let updatedFeed;
       try {
         const filter = { ogId: rawFeed.id };
+        const author = await Member.findOne({ ogId: rawFeed.from.id });
         const updatedValues = {
           type: rawFeed.type,
           story: rawFeed.story ? rawFeed.story : null,
@@ -106,15 +107,13 @@ export class OgFeedManager {
           createdAt: rawFeed.created_time,
           updatedAt: rawFeed.updated_time,
           ogId: rawFeed.id,
+          author: author._id,
+          group: groupId,
         };
         updatedFeed = await Feed.findOneAndUpdate(filter, updatedValues, {
           new: true,
           upsert: true,
         });
-        const author = await Member.find({ ogId: rawFeed.from.id });
-        updatedFeed.author = author.id;
-        updatedFeed.group = groupId;
-        await updatedFeed.save();
       } catch (e) {
         reject(e);
       }

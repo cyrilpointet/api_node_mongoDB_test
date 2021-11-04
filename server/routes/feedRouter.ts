@@ -20,43 +20,6 @@ const feedRouter = express.Router();
  * @apiSuccess {Object} feed.group groupe auquel est attache le feed
  * @apiSuccess {Object} feed.author member auteur du feed
  *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *    [
- *      {
- *      "story": "string",
- *      "message": "string",
- *      "pictureLink": "string",
- *      "createdAt": "2021-10-29T10:50:11.368Z",
- *      "updatedAt": "2021-10-29T10:50:11.368Z",
- *      "_id": "617bd1e532cc53075433bd7b",
- *      "type": "type",
- *      "group": {
- *          "_id": "617bd1e332cc53075433bd08",
- *          "name": "gryffondor",
- *          "__v": 0,
- *          "id": "617bd1e332cc53075433bd08"
- *      },
- *      "author": {
- *          "department": null,
- *          "primaryAddress": null,
- *          "hasCustomPicture": false,
- *          "accountClaimTime": null,
- *          "active": false,
- *          "groups": [
- *              "617bd1e332cc53075433bd08"
- *          ],
- *          "_id": "617bd1e432cc53075433bd2e",
- *          "name": "Toto
- *          "email": "rd.hsyny@example.com",
- *          "pictureLink": "https://randomuser.me/api/portraits/thumb/men/49.jpg",
- *          "__v": 0,
- *          "id": "617bd1e432cc53075433bd2e"
- *      },
- *      "__v": 0,
- *      "id": "617bd1e532cc53075433bd7b",
- *      }
- *    ]
  */
 feedRouter.get("/", auth, feedsController.getAllFeeds);
 
@@ -75,41 +38,6 @@ feedRouter.get("/", auth, feedsController.getAllFeeds);
  * @apiSuccess {Object} group groupe auquel est attache le feed
  * @apiSuccess {Object} author member auteur du feed
  *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *     "story": "string",
- *     "message": "string",
- *     "pictureLink": "string",
- *     "createdAt": "2021-10-29T10:50:11.368Z",
- *     "updatedAt": "2021-10-29T10:50:11.368Z",
- *     "_id": "617bd1e532cc53075433bd7b",
- *     "type": "type",
- *     "group": {
- *         "_id": "617bd1e332cc53075433bd08",
- *         "name": "gryffondor",
- *         "__v": 0,
- *         "id": "617bd1e332cc53075433bd08"
- *     },
- *     "author": {
- *         "department": null,
- *         "primaryAddress": null,
- *         "hasCustomPicture": false,
- *         "accountClaimTime": null,
- *         "active": false,
- *         "groups": [
- *             "617bd1e332cc53075433bd08"
- *         ],
- *         "_id": "617bd1e432cc53075433bd2e",
- *         "name": "Toto
- *         "email": "rd.hsyny@example.com",
- *         "pictureLink": "https://randomuser.me/api/portraits/thumb/men/49.jpg",
- *         "__v": 0,
- *         "id": "617bd1e432cc53075433bd2e"
- *     },
- *     "__v": 0,
- *     "id": "617bd1e532cc53075433bd7b",
- *     }
  */
 feedRouter.get("/:id", auth, feedsController.getFeedById);
 

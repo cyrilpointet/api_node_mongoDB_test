@@ -17,36 +17,6 @@ const commentRouter = express.Router();
  * @apiSuccess {Object} comment.feed groupe auquel est attache le comment
  * @apiSuccess {Object} comment.author member auteur du comment
  *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *    [
- *      {
- *      "message": "string",
- *      "createdAt": "2021-10-29T10:50:11.368Z",
- *      "_id": "617bd1e532cc53075433bd7b",
- *      "feed": {
- *          TODO
- *      },
- *      "author": {
- *          "department": null,
- *          "primaryAddress": null,
- *          "hasCustomPicture": false,
- *          "accountClaimTime": null,
- *          "active": false,
- *          "groups": [
- *              "617bd1e332cc53075433bd08"
- *          ],
- *          "_id": "617bd1e432cc53075433bd2e",
- *          "name": "Toto
- *          "email": "rd.hsyny@example.com",
- *          "pictureLink": "https://randomuser.me/api/portraits/thumb/men/49.jpg",
- *          "__v": 0,
- *          "id": "617bd1e432cc53075433bd2e"
- *      },
- *      "__v": 0,
- *      "id": "617bd1e532cc53075433bd7b",
- *      }
- *    ]
  */
 commentRouter.get("/", auth, commentsController.getAllComments);
 
@@ -65,38 +35,6 @@ commentRouter.get("/", auth, commentsController.getAllComments);
  * @apiSuccess {Object} group groupe auquel est attache le comment
  * @apiSuccess {Object} author member auteur du comment
  *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *     "story": "string",
- *     "message": "string",
- *     "pictureLink": "string",
- *     "createdAt": "2021-10-29T10:50:11.368Z",
- *     "updatedAt": "2021-10-29T10:50:11.368Z",
- *     "_id": "617bd1e532cc53075433bd7b",
- *     "type": "type",
- *     "feed": {
- *         TODO
- *     },
- *     "author": {
- *         "department": null,
- *         "primaryAddress": null,
- *         "hasCustomPicture": false,
- *         "accountClaimTime": null,
- *         "active": false,
- *         "groups": [
- *             "617bd1e332cc53075433bd08"
- *         ],
- *         "_id": "617bd1e432cc53075433bd2e",
- *         "name": "Toto
- *         "email": "rd.hsyny@example.com",
- *         "pictureLink": "https://randomuser.me/api/portraits/thumb/men/49.jpg",
- *         "__v": 0,
- *         "id": "617bd1e432cc53075433bd2e"
- *     },
- *     "__v": 0,
- *     "id": "617bd1e532cc53075433bd7b",
- *     }
  */
 commentRouter.get("/:id", auth, commentsController.getCommentById);
 

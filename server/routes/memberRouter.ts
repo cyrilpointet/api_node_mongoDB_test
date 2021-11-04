@@ -16,40 +16,6 @@ const memberRouter = express.Router();
  * @apiSuccess {String} member.name Nom du membre
  * @apiSuccess {String} member.email Email du membre
  * @apiSuccess {String} member.id Id du membre (pour React Admin)
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *    [
- *      {
- *        "groups": [
- *          {
- *            "_id": "6141bbf815733f2443c93c54",
- *            "name": "gryffondor",
- *            "__v": 0,
- *          }
- *        ],
- *        "_id": "6141bbf815733f2443c93c78",
- *        "name": "Harry 0",
- *        "email": "Harry_0@poudlard.com",
- *        "__v": 0,
- *        "id": "6141bbf815733f2443c93c78",
- *        "feeds": [
-              {
-                "story": null,
-                "message": null,
-                "pictureLink": null,
-                "createdAt": "2021-10-29T10:50:11.368Z",
-                "updatedAt": "2021-10-29T10:50:11.368Z",
-                "_id": "617bd1e532cc53075433bd5b",
-                "type": "coucou",
-                "group": "617bd1e332cc53075433bd08",
-                "author": "617bd1e432cc53075433bd2e",
-                "__v": 0,
-                "id": "617bd1e532cc53075433bd5b"
-              }
-            ]
- *      }
- *    ]
  */
 memberRouter.get("/", auth, memberCtrl.getAllMembers);
 

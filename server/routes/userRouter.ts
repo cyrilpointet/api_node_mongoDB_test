@@ -16,14 +16,6 @@ const userRouter = express.Router();
  * @apiSuccess {String} userId User id.
  * @apiSuccess {String} token jwt.
  *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *        "_id": "61420de7b8eadc08ab785a04",
- *        "email": "tota@toto.toto",
- *        "password": "$2a$10$1I5KLqUK4WXCMqp4CEDZr.U5lzoy6zx3yatM/VP48bhc7gPta/kb6",
- *        "__v": 0
- *    }
  */
 userRouter.post("/signup", userCtrl.signup);
 
@@ -37,12 +29,6 @@ userRouter.post("/signup", userCtrl.signup);
  * @apiSuccess {String} userId User id.
  * @apiSuccess {String} token jwt.
  *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "userId": "345678gi987",
- *       "token": "2VySWQiOiI2MTNiNTBkMTI3NTI3ZTAyYzA4MDYzNzAiLCJpYXQiOjE2MzE3MTgyMzQsImV4cCI6MTYzMTgwN"
- *     }
  */
 userRouter.post("/login", userCtrl.login);
 
