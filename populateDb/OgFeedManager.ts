@@ -5,6 +5,7 @@ import { Group } from "../server/models/Group";
 import { Feed } from "../server/models/Feed";
 import { Member } from "../server/models/Member";
 import { ogFeedRouteResponseType, ogFeedType } from "./ApiTypes";
+import { OgCommentManager } from "./OgCommentManager";
 
 const FEED_PARAMS = [
   "from",
@@ -40,7 +41,6 @@ export class OgFeedManager {
   ): Promise<void> {
     return new Promise(async (resolve, reject) => {
       let resp: ogFeedRouteResponseType;
-      process.stdout.write(".");
       try {
         resp = await ApiCrawler.getDataFromWpApi(
           url,
@@ -58,11 +58,11 @@ export class OgFeedManager {
 
       const feeds = resp.data;
       for (let i = 0; i < feeds.length; i++) {
+        process.stdout.write(".");
         try {
-          const updatedFeed = await this.upsertFeed(feeds[i], groupId);
-          await updatedFeed.save();
+          await this.upsertFeed(feeds[i], groupId);
         } catch (e) {
-          reject(e);
+          console.error(`invalid data feed ${feeds[i].id}`);
         }
       }
 
@@ -95,6 +95,7 @@ export class OgFeedManager {
     groupId: string
   ): Promise<Feed> {
     return new Promise(async (resolve, reject) => {
+      let updatedFeed;
       try {
         const filter = { ogId: rawFeed.id };
         const updatedValues = {
@@ -106,7 +107,7 @@ export class OgFeedManager {
           updatedAt: rawFeed.updated_time,
           ogId: rawFeed.id,
         };
-        const updatedFeed = await Feed.findOneAndUpdate(filter, updatedValues, {
+        updatedFeed = await Feed.findOneAndUpdate(filter, updatedValues, {
           new: true,
           upsert: true,
         });
@@ -114,6 +115,13 @@ export class OgFeedManager {
         updatedFeed.author = author.id;
         updatedFeed.group = groupId;
         await updatedFeed.save();
+      } catch (e) {
+        reject(e);
+      }
+
+      // Récupération des comments
+      try {
+        await OgCommentManager.populateFeedComments(updatedFeed);
         resolve(updatedFeed);
       } catch (e) {
         reject(e);

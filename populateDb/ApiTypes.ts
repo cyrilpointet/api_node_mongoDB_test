@@ -28,6 +28,14 @@ export type ogFeedRouteResponseType = {
   };
 };
 
+export type ogCommentRouteResponseType = {
+  data: ogCommentType[];
+  paging?: {
+    previous: string;
+    next: string;
+  };
+};
+
 export type ogGroupType = {
   id: string;
   name: string;
@@ -68,4 +76,14 @@ export type ogFeedType = {
   created_time: string;
   updated_time: string;
   full_picture?: string;
+};
+
+export type ogCommentType = {
+  id: string;
+  message: string;
+  from: {
+    name: string;
+    id: string;
+  };
+  created_time: string;
 };

@@ -1,5 +1,6 @@
 import express from "express";
 import { Feed } from "../models/Feed";
+import { Comment } from "../models/Comment";
 import { QueryHelper } from "../services/QueryHelper";
 
 type feedsCtrlType = {
@@ -22,6 +23,7 @@ export const feedsController: feedsCtrlType = {
         .skip(QueryHelper.getQuerySkip(req))
         .populate("author")
         .populate("group")
+        .populate({ path: "comments", model: Comment })
         .exec();
       res.status(200).set("X-Total-Count", totalItemsCount).json(products);
     } catch (e) {
@@ -34,7 +36,10 @@ export const feedsController: feedsCtrlType = {
     res: express.Response
   ): Promise<void> {
     try {
-      const feed = await Feed.findOne({ _id: req.params.id });
+      const feed = await Feed.findOne({ _id: req.params.id }).populate({
+        path: "comments",
+        model: Comment,
+      });
       res.status(200).json(feed);
     } catch (e) {
       res.status(404).json({ error: e.message });

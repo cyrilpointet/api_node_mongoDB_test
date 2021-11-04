@@ -40,7 +40,6 @@ export class OgMemberManager {
   ): Promise<void> {
     return new Promise(async (resolve, reject) => {
       let resp = null;
-      process.stdout.write(".");
       try {
         resp = await ApiCrawler.getDataFromWpApi(
           url,
@@ -55,10 +54,11 @@ export class OgMemberManager {
 
       const members = resp.data;
       for (let i = 0; i < members.length; i++) {
+        process.stdout.write(".");
         try {
           await this.upsertMember(members[i], groupId);
         } catch (e) {
-          reject(e);
+          console.error(`invalid data member ${members[i].id}`);
         }
       }
 

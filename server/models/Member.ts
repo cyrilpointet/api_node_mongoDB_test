@@ -29,6 +29,12 @@ MemberSchema.virtual("feeds", {
   foreignField: "author",
 });
 
+MemberSchema.virtual("comments", {
+  ref: "Comment",
+  localField: "_id",
+  foreignField: "author",
+});
+
 // Setters -------------------------------------------
 MemberSchema.set("toJSON", {
   virtuals: true,

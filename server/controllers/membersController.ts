@@ -1,6 +1,7 @@
 import express from "express";
 import { Member } from "../models/Member";
 import { Feed } from "../models/Feed";
+import { Comment } from "../models/Comment";
 import { QueryHelper } from "../services/QueryHelper";
 
 type memberCtrlType = {
@@ -24,6 +25,7 @@ export const memberCtrl: memberCtrlType = {
         .skip(QueryHelper.getQuerySkip(req))
         .populate("groups")
         .populate({ path: "feeds", model: Feed })
+        .populate({ path: "comments", model: Comment })
         .exec();
       res.status(200).set("X-Total-Count", totalItemsCount).json(members);
     } catch (e) {
@@ -38,7 +40,8 @@ export const memberCtrl: memberCtrlType = {
     try {
       const member = await Member.findOne({ _id: req.params.id })
         .populate("groups")
-        .populate({ path: "feeds", model: Feed });
+        .populate({ path: "feeds", model: Feed })
+        .populate({ path: "comments", model: Comment });
       res.status(200).json(member);
     } catch (e) {
       res.status(404).json({ e });

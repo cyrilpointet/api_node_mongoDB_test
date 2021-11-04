@@ -35,13 +35,13 @@ export class OgGroupManager {
           const updatedGroup = await this.upsertGroup(groups[i]);
           process.stdout.write("Managing members");
           await OgMemberManager.populateGroupMembers(updatedGroup);
-          process.stdout.write("Managing feeds");
+          process.stdout.write("Managing feeds and comments");
           await OgFeedManager.populateGroupFeeds(updatedGroup);
           console.log(
             `Group "${updatedGroup.name}" has been successfully updated`
           );
         } catch (e) {
-          reject(e);
+          console.error(`invalid data group ${groups[i].id}`);
         }
       }
 

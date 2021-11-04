@@ -1,16 +1,12 @@
 import { Schema, model } from "mongoose";
 
-const FeedSchema = new Schema({
+const CommentSchema = new Schema({
   ogId: { type: String, required: true, unique: true },
-  type: { type: String, required: true },
-  story: { type: String, default: null },
   message: { type: String, default: null },
-  pictureLink: { type: String, default: null },
   createdAt: { type: Date, required: true, default: new Date() },
-  updatedAt: { type: Date, required: true, default: new Date() },
-  group: {
+  feed: {
     type: Schema.Types.ObjectId,
-    ref: "Group",
+    ref: "Feed",
   },
   author: {
     type: Schema.Types.ObjectId,
@@ -19,21 +15,15 @@ const FeedSchema = new Schema({
 });
 
 // Virtuals -------------------------------------------
-FeedSchema.virtual("id").get(function () {
+CommentSchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
-FeedSchema.virtual("comments", {
-  ref: "Comment",
-  localField: "_id",
-  foreignField: "feed",
-});
-
 // Setters -------------------------------------------
-FeedSchema.set("toJSON", {
+CommentSchema.set("toJSON", {
   virtuals: true,
 });
 
 //--------------------------------------------------
 
-export const Feed = model("Feed", FeedSchema);
+export const Comment = model("Comment", CommentSchema);

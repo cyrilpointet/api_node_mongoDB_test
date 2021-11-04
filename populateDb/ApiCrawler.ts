@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import {
+  ogCommentRouteResponseType,
   ogFeedRouteResponseType,
   ogGroupRouteResponseType,
   ogMemberRouteResponseType,
@@ -20,6 +21,7 @@ export class ApiCrawler {
     | ogFeedRouteResponseType
     | ogGroupRouteResponseType
     | ogMemberRouteResponseType
+    | ogCommentRouteResponseType
   > {
     const constructedUrl = new URL(url, process.env.OG_BASE_URL);
     constructedUrl.searchParams.set("limit", limit.toString());
