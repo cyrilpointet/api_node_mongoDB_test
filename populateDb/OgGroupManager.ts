@@ -23,7 +23,8 @@ export class OgGroupManager {
     return new Promise(async (resolve, reject) => {
       let resp: ogGroupRouteResponseType;
       try {
-        resp = await ApiCrawler.getDataFromWpApi(url, 15, GROUP_PARAMS, after);
+        // TODO => remettre la limte à 500 pour un import complet
+        resp = await ApiCrawler.getDataFromWpApi(url, 20, GROUP_PARAMS, after);
       } catch (e) {
         reject(e);
       }
@@ -47,6 +48,7 @@ export class OgGroupManager {
 
       if (resp.paging.next) {
         try {
+          // TODO => décommenter pour un import complet
           //await this.populateGroups(url, resp.paging.cursors.after);
           resolve();
         } catch (e) {

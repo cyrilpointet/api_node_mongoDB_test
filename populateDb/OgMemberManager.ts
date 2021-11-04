@@ -18,12 +18,6 @@ const MEMBERS_PARAMS = [
 export class OgMemberManager {
   public static populateGroupMembers(group: Group): Promise<void> {
     return new Promise(async (resolve, reject) => {
-      // Supprime le groupe de la liste des groupes de tous les membres
-      await Member.updateMany(
-        { groups: { $in: [group._id] } },
-        { $pull: { groups: group._id } }
-      );
-
       try {
         await this.crawlGroupMembers(group._id, group.ogId + "/members");
         resolve();

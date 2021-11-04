@@ -7,8 +7,8 @@ export const seedAdmin = async () => {
     for (let i = 0; i < users.length; i++) {
       users[i].remove();
     }
-    const admin = await User.findOne({ email: "admin@admin.admin" }).exec();
-    if (null === admin) {
+    const admins = await User.find({});
+    if (1 > admins.length) {
       const hash = await bcryptjs.hash("admin", 10);
       const user = new User({
         email: "admin@admin.admin",

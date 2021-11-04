@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, QueryOptions } from "mongoose";
 
 const FeedSchema = new Schema({
   ogId: { type: String, required: true, unique: true },
@@ -32,6 +32,11 @@ FeedSchema.virtual("comments", {
 // Setters -------------------------------------------
 FeedSchema.set("toJSON", {
   virtuals: true,
+});
+
+// Suppression des entrées dans les relations au delete ---------------
+FeedSchema.pre("remove", function (next: QueryOptions) {
+  this.model("Comment").updateMany({ feed: this._id }, { feed: null }, next);
 });
 
 //--------------------------------------------------

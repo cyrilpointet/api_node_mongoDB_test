@@ -20,9 +20,6 @@ const FEED_PARAMS = [
 export class OgFeedManager {
   public static populateGroupFeeds(group: Group): Promise<void> {
     return new Promise(async (resolve, reject) => {
-      // Supprime le groupe de la liste des groupes de tous les posts
-      await Feed.updateMany({ group: group._id }, { group: null });
-
       try {
         await this.crawlGroupFeeds(group._id, group.ogId + "/feed");
         resolve();
