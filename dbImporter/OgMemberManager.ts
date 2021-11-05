@@ -2,10 +2,24 @@
 
 import { ApiCrawler } from "./ApiCrawler";
 import { Member } from "../server/models/Member";
-import { ogMemberType } from "./ApiTypes";
+import { ogMemberRouteResponseType, ogMemberType } from "./ApiTypes";
+
+const API_LIMIT = 500;
+const MEMBER_FIElDS = [
+  "email",
+  "name",
+  "department",
+  "primary_address",
+  "picture",
+  "account_claim_time",
+  "active",
+];
 
 export class OgMemberManager {
-  public static manageApiData(ogResp, groupId): Promise<void> {
+  public static manageApiData(
+    ogResp: ogMemberRouteResponseType,
+    groupId: string
+  ): Promise<void> {
     return new Promise(async (resolve, reject) => {
       const members = ogResp.data;
       for (let i = 0; i < members.length; i++) {
@@ -18,9 +32,9 @@ export class OgMemberManager {
       }
       if (ogResp.paging?.next) {
         try {
-          const newResp = await ApiCrawler.getDataFromApiUrl(
-            ogResp.paging.next
-          );
+          const formatedUrl = new URL(ogResp.paging.next);
+          formatedUrl.searchParams.set("limit", API_LIMIT.toString());
+          const newResp = await ApiCrawler.getDataFromApiUrl(formatedUrl);
           await this.manageApiData(newResp.data, groupId);
           resolve();
         } catch (e) {
@@ -30,6 +44,21 @@ export class OgMemberManager {
         resolve();
       }
     });
+  }
+
+  public static setOriginalQuery(groupId: string): ogMemberRouteResponseType {
+    return {
+      data: [],
+      paging: {
+        cursors: {
+          before: "",
+          after: "",
+        },
+        next: `${
+          process.env.OG_BASE_URL
+        }/${groupId}/members?limit=500&fields=${MEMBER_FIElDS.join()}`,
+      },
+    };
   }
 
   public static upsertMember(

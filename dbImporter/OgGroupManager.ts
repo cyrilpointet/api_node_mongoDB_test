@@ -4,10 +4,12 @@ import { Group } from "../server/models/Group";
 import { OgMemberManager } from "./OgMemberManager";
 import { ApiCrawler } from "./ApiCrawler";
 import { OgFeedManager } from "./OgFeedManager";
-import { ogGroupType } from "./ApiTypes";
+import { ogGroupRouteResponseType, ogGroupType } from "./ApiTypes";
+
+const API_LIMIT = 50;
 
 export class OgGroupManager {
-  public static manageApiData(ogResp): Promise<void> {
+  public static manageApiData(ogResp: ogGroupRouteResponseType): Promise<void> {
     return new Promise(async (resolve, reject) => {
       const groups = ogResp.data;
       // Gestion des groupes
@@ -20,28 +22,37 @@ export class OgGroupManager {
           if (groups[i].members) {
             process.stdout.write("Members: ");
             await OgMemberManager.manageApiData(
-              groups[i].members,
+              groups[i].members
+                ? groups[i].members
+                : OgMemberManager.setOriginalQuery(groups[i].id),
               updatedGroup.id
             );
             console.log("Done");
           }
           // Gestion des feeds
           if (groups[i].feed) {
-            process.stdout.write("Feed: ");
-            await OgFeedManager.manageApiData(groups[i].feed, updatedGroup.id);
+            process.stdout.write("Feed and comments: ");
+            await OgFeedManager.manageApiData(
+              groups[i].feed
+                ? groups[i].feed
+                : OgFeedManager.setOriginalQuery(groups[i].id),
+              updatedGroup.id
+            );
             console.log("Done");
           }
-          console.log(`"${groups[i].name}" succesfully updated`);
+          console.log(
+            `\x1b[32m"${groups[i].name}"\x1b[0m has been succesfully updated`
+          );
         } catch {
-          console.log(`Error with group "${groups[i].name}"`);
+          console.error(`Error with group "${groups[i].name}"`);
         }
       }
 
       if (ogResp.paging?.next) {
         try {
-          const newResp = await ApiCrawler.getDataFromApiUrl(
-            ogResp.paging.next
-          );
+          const formatedUrl = new URL(ogResp.paging.next);
+          formatedUrl.searchParams.set("limit", API_LIMIT.toString());
+          const newResp = await ApiCrawler.getDataFromApiUrl(formatedUrl);
           await this.manageApiData(newResp.data);
           resolve();
         } catch (e) {

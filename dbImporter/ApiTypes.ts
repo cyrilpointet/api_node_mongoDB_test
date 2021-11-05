@@ -25,6 +25,10 @@ export type ogFeedRouteResponseType = {
   paging?: {
     previous: string;
     next: string;
+    cursors?: {
+      before: string;
+      after: string;
+    };
   };
 };
 
@@ -33,6 +37,10 @@ export type ogCommentRouteResponseType = {
   paging?: {
     previous: string;
     next: string;
+    cursors?: {
+      previous: string;
+      next: string;
+    };
   };
 };
 

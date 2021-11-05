@@ -1,15 +1,17 @@
 /* eslint-disable no-async-promise-executor */
 
 import { ApiCrawler } from "./ApiCrawler";
-import { Feed } from "../server/models/Feed";
 import { Member } from "../server/models/Member";
 import { ogCommentRouteResponseType, ogCommentType } from "./ApiTypes";
 import { Comment } from "../server/models/Comment";
 
-const COMMENT_PARAMS = ["message", "from", "created_time"];
+const API_LIMIT = 500;
 
 export class OgCommentManager {
-  public static manageApiData(ogResp, feedId): Promise<void> {
+  public static manageApiData(
+    ogResp: ogCommentRouteResponseType,
+    feedId: string
+  ): Promise<void> {
     return new Promise(async (resolve, reject) => {
       const comments = ogResp.data;
       for (let i = 0; i < comments.length; i++) {
@@ -22,9 +24,9 @@ export class OgCommentManager {
       }
       if (ogResp.paging?.next && ogResp.paging?.cursors) {
         try {
-          const newResp = await ApiCrawler.getDataFromApiUrl(
-            ogResp.paging.next
-          );
+          const formatedUrl = new URL(ogResp.paging.next);
+          formatedUrl.searchParams.set("limit", API_LIMIT.toString());
+          const newResp = await ApiCrawler.getDataFromApiUrl(formatedUrl);
           await this.manageApiData(newResp.data, feedId);
           resolve();
         } catch (e) {

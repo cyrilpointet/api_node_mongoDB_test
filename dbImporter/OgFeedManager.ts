@@ -2,13 +2,30 @@
 
 import { Feed } from "../server/models/Feed";
 import { Member } from "../server/models/Member";
-import { ogFeedType } from "./ApiTypes";
+import { ogFeedRouteResponseType, ogFeedType } from "./ApiTypes";
 import { ApiCrawler } from "./ApiCrawler";
 import { OgCommentManager } from "./OgCommentManager";
-//import { OgCommentManager } from "./OgCommentManager";
+
+const API_LIMIT = 500;
+
+const COMMENT_FIELDS = ["message", "from", "created_time"];
+
+const FEED_FIElDS = [
+  "from",
+  "type",
+  "story",
+  "message",
+  "full_picture",
+  "created_time",
+  "updated_time",
+  `comments.fields(${COMMENT_FIELDS.join()}).limit(10)`,
+];
 
 export class OgFeedManager {
-  public static manageApiData(ogResp, groupId): Promise<void> {
+  public static manageApiData(
+    ogResp: ogFeedRouteResponseType,
+    groupId: string
+  ): Promise<void> {
     return new Promise(async (resolve, reject) => {
       const feeds = ogResp.data;
       for (let i = 0; i < feeds.length; i++) {
@@ -16,15 +33,15 @@ export class OgFeedManager {
         try {
           await this.upsertFeed(feeds[i], groupId);
         } catch (e) {
-          console.error(`invalid data member ${feeds[i].id}`);
+          console.error(`invalid data feed ${feeds[i].id}`);
           reject(e);
         }
       }
       if (ogResp.paging?.next && ogResp.paging?.cursors) {
         try {
-          const newResp = await ApiCrawler.getDataFromApiUrl(
-            ogResp.paging.next
-          );
+          const formatedUrl = new URL(ogResp.paging.next);
+          formatedUrl.searchParams.set("limit", API_LIMIT.toString());
+          const newResp = await ApiCrawler.getDataFromApiUrl(formatedUrl);
           await this.manageApiData(newResp.data, groupId);
           resolve();
         } catch (e) {
@@ -34,6 +51,22 @@ export class OgFeedManager {
         resolve();
       }
     });
+  }
+
+  public static setOriginalQuery(groupId: string): ogFeedRouteResponseType {
+    return {
+      data: [],
+      paging: {
+        cursors: {
+          before: "",
+          after: "",
+        },
+        previous: "",
+        next: `${
+          process.env.OG_BASE_URL
+        }/${groupId}/feed?limit=500&fields=${FEED_FIElDS.join()}`,
+      },
+    };
   }
 
   private static upsertFeed(
@@ -60,9 +93,9 @@ export class OgFeedManager {
           new: true,
           upsert: true,
         });
-        resolve(updatedFeed);
       } catch (e) {
         reject(e);
+        return;
       }
 
       if (rawFeed.comments) {
@@ -71,11 +104,13 @@ export class OgFeedManager {
             rawFeed.comments,
             updatedFeed.id
           );
+          resolve(updatedFeed);
         } catch (e) {
           reject(e);
         }
+      } else {
+        resolve(updatedFeed);
       }
-      resolve(updatedFeed);
     });
   }
 }
