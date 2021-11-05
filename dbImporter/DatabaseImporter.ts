@@ -3,11 +3,18 @@
 import mongoose from "mongoose";
 import bcryptjs from "bcryptjs";
 import { seedAdmin } from "../seed/seedAdmin";
-import { ApiCrawler } from "./ApiCrawler";
+import { ApiCrawler, apiCrawlerReportType } from "./ApiCrawler";
 import { User } from "../server/models/User";
 
 class DatabaseImporter {
-  public static async populateDb(): Promise<void> {
+  public static async populateDb(): Promise<apiCrawlerReportType> {
+    console.log(`
+  _  __        _                _      _          _                     _           
+ | |/ /___ _ _(_)_ _  __ _   __| |__ _| |_ __ _  (_)_ __  _ __  ___ _ _| |_ ___ _ _ 
+ | ' </ -_) '_| | ' \\/ _\` | / _\` / _\` |  _/ _\` | | | '  \\| '_ \\/ _ \\ '_|  _/ -_) '_|
+ |_|\\_\\___|_| |_|_||_\\__, | \\__,_\\__,_|\\__\\__,_| |_|_|_|_| .__/\\___/_|  \\__\\___|_|  
+                     |___/                               |_|                        
+`);
     await mongoose.connect(process.env.URL_MONGO, {
       useNewUrlParser: true,
       dbName: process.env.DB_NAME,
@@ -33,9 +40,9 @@ class DatabaseImporter {
       try {
         // Créer un admin par defaut si il n'y en a aucun en base
         await seedAdmin();
-        await ApiCrawler.start();
+        const report = await ApiCrawler.start();
         await mongoose.disconnect();
-        resolve();
+        resolve(report);
       } catch (e) {
         await mongoose.disconnect();
         reject(e);
@@ -45,10 +52,15 @@ class DatabaseImporter {
 }
 
 DatabaseImporter.populateDb()
-  .then(() => {
+  .then((report) => {
     console.log(
-      `DB updated with \x1b[32m${ApiCrawler.apiCallCount} calls \x1b[0mand \x1b[31m${ApiCrawler.apiCallErrors} errors\x1b[0m`
+      `DB updated with \x1b[32m${report.apiCallCount} api calls \x1b[0mand \x1b[31m${report.apiCallErrors} errors\x1b[0m`
     );
+    console.log("Total in database :");
+    console.log(`\x1b[34m${report.groupCount}\x1b[0m groups`);
+    console.log(`\x1b[34m${report.memberCount}\x1b[0m members`);
+    console.log(`\x1b[34m${report.feedCount}\x1b[0m feeds`);
+    console.log(`\x1b[34m${report.commentCount}\x1b[0m comments`);
   })
   .catch((e) => {
     console.error("Import stopped");

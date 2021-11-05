@@ -16,6 +16,7 @@ const MEMBER_FIElDS = [
 ];
 
 export class OgMemberManager {
+  public static memberCount = 0;
   public static manageApiData(
     ogResp: ogMemberRouteResponseType,
     groupId: string
@@ -23,9 +24,12 @@ export class OgMemberManager {
     return new Promise(async (resolve, reject) => {
       const members = ogResp.data;
       for (let i = 0; i < members.length; i++) {
-        process.stdout.write(".");
         try {
           await this.upsertMember(members[i], groupId);
+          this.memberCount++;
+          process.stdout.write(
+            `\rMembers: \x1b[34m${this.memberCount}\x1b[0m members updated`
+          );
         } catch (e) {
           console.error(`invalid data member ${members[i].id}`);
         }

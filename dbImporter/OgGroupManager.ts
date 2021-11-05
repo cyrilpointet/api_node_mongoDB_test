@@ -19,27 +19,26 @@ export class OgGroupManager {
           const updatedGroup = await OgGroupManager.upsertGroup(groups[i]);
 
           // Gestion des membres
-          if (groups[i].members) {
-            process.stdout.write("Members: ");
-            await OgMemberManager.manageApiData(
-              groups[i].members
-                ? groups[i].members
-                : OgMemberManager.setOriginalQuery(groups[i].id),
-              updatedGroup.id
-            );
-            console.log("Done");
-          }
+          process.stdout.write("Members:");
+          OgMemberManager.memberCount = 0;
+          await OgMemberManager.manageApiData(
+            groups[i].members
+              ? groups[i].members
+              : OgMemberManager.setOriginalQuery(groups[i].id),
+            updatedGroup.id
+          );
+          console.log(" Done");
+
           // Gestion des feeds
-          if (groups[i].feed) {
-            process.stdout.write("Feed and comments: ");
-            await OgFeedManager.manageApiData(
-              groups[i].feed
-                ? groups[i].feed
-                : OgFeedManager.setOriginalQuery(groups[i].id),
-              updatedGroup.id
-            );
-            console.log("Done");
-          }
+          process.stdout.write("Feed and comments: ");
+          await OgFeedManager.manageApiData(
+            groups[i].feed
+              ? groups[i].feed
+              : OgFeedManager.setOriginalQuery(groups[i].id),
+            updatedGroup.id
+          );
+          console.log("Done");
+
           console.log(
             `\x1b[32m"${groups[i].name}"\x1b[0m has been succesfully updated`
           );

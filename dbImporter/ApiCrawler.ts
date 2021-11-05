@@ -2,29 +2,10 @@
 
 import axios from "axios";
 import { OgGroupManager } from "./OgGroupManager";
-
-// const COMMENT_FIELDS = ["message", "from", "created_time"];
-//
-// const FEED_FIElDS = [
-//   "from",
-//   "type",
-//   "story",
-//   "message",
-//   "full_picture",
-//   "created_time",
-//   "updated_time",
-//   `comments.fields(${COMMENT_FIELDS.join()}).limit(10)`,
-// ];
-//
-// const MEMBER_FIElDS = [
-//   "email",
-//   "name",
-//   "department",
-//   "primary_address",
-//   "picture",
-//   "account_claim_time",
-//   "active",
-// ];
+import { Member } from "../server/models/Member";
+import { Group } from "../server/models/Group";
+import { Feed } from "../server/models/Feed";
+import { Comment } from "../server/models/Comment";
 
 const GROUP_FIELDS = [
   "name",
@@ -33,19 +14,23 @@ const GROUP_FIELDS = [
   "privacy",
   "archived",
   "updated_time",
-  // `members.fields(${MEMBER_FIElDS.join()}).limit(500)`,
-  // `feed.fields(${FEED_FIElDS.join()}).limit(10)`,
 ];
 
 const GROUP_LIMIT = 500;
 
+export type apiCrawlerReportType = {
+  apiCallCount: number;
+  apiCallErrors: number;
+  groupCount: number;
+  memberCount: number;
+  feedCount: number;
+  commentCount: number;
+};
+
 export class ApiCrawler {
   public static apiCallCount = 0;
   public static apiCallErrors = 0;
-  public static start(): Promise<{
-    apiCallCount: number;
-    apiCallErrors: number;
-  }> {
+  public static start(): Promise<apiCrawlerReportType> {
     this.apiCallCount = 0;
     this.apiCallErrors = 0;
     return new Promise(async (resolve, reject) => {
@@ -73,14 +58,24 @@ export class ApiCrawler {
         reject(e);
         return;
       }
+
+      const groupCount = await Group.find({}).count();
+      const memberCount = await Member.find({}).count();
+      const feedCount = await Feed.find({}).count();
+      const commentCount = await Comment.find({}).count();
       resolve({
+        groupCount,
+        memberCount,
+        feedCount,
+        commentCount,
         apiCallCount: this.apiCallCount,
         apiCallErrors: this.apiCallErrors,
       });
     });
   }
 
-  public static getDataFromApiUrl(url: URL): Promise<any> {
+  // On met un any pour accepter tous les types de réponses de l'api wp
+  public static getDataFromApiUrl(url: URL): Promise<any> { // eslint-disable-line
     const headers = {
       "Content-Type": "application/json",
       Authorization: "Bearer " + process.env.KERING_APP_TOKEN,
