@@ -6,7 +6,8 @@
     "watch": "webpack --config webpack.config.js --watch",
     "seed": "node ./build/seeder.bundle.js",
     "build-dev": "webpack --config webpack.config.js",
-    "populate-db": "node ./build/populateDb.bundle.js"
+    "populate-db": "node ./build/populateDb.bundle.js",
+    "populate-db-2": "node ./build/populateDb2.bundle.js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
