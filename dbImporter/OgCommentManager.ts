@@ -8,7 +8,7 @@ import { Comment } from "../server/models/Comment";
 const API_LIMIT = 500;
 
 export class OgCommentManager {
-  public static manageApiData(
+  public static manageApiResponse(
     ogResp: ogCommentRouteResponseType,
     feedId: string
   ): Promise<void> {
@@ -27,7 +27,7 @@ export class OgCommentManager {
           const formatedUrl = new URL(ogResp.paging.next);
           formatedUrl.searchParams.set("limit", API_LIMIT.toString());
           const newResp = await ApiCrawler.getDataFromApiUrl(formatedUrl);
-          await this.manageApiData(newResp.data, feedId);
+          await this.manageApiResponse(newResp.data, feedId);
           resolve();
         } catch (e) {
           reject(e);

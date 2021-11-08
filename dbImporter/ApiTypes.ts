@@ -52,8 +52,6 @@ export type ogGroupType = {
   updated_time: string;
   archived: string;
   description?: string;
-  members?: ogMemberRouteResponseType;
-  feed?: ogFeedRouteResponseType;
 };
 
 export type ogMemberType = {

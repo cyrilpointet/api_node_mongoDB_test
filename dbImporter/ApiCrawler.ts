@@ -7,17 +7,6 @@ import { Group } from "../server/models/Group";
 import { Feed } from "../server/models/Feed";
 import { Comment } from "../server/models/Comment";
 
-const GROUP_FIELDS = [
-  "name",
-  "description",
-  "created_time",
-  "privacy",
-  "archived",
-  "updated_time",
-];
-
-const GROUP_LIMIT = 500;
-
 export type apiCrawlerReportType = {
   apiCallCount: number;
   apiCallErrors: number;
@@ -34,25 +23,8 @@ export class ApiCrawler {
     this.apiCallCount = 0;
     this.apiCallErrors = 0;
     return new Promise(async (resolve, reject) => {
-      // Construct Url
-      const url = new URL(
-        process.env.KERING_OG_ID + "/groups",
-        process.env.OG_BASE_URL
-      );
-      url.searchParams.set("limit", GROUP_LIMIT.toString());
-      url.searchParams.set("fields", GROUP_FIELDS.join());
-      // Premier appel
-      let ogResp;
       try {
-        const { data } = await ApiCrawler.getDataFromApiUrl(url);
-        ogResp = data;
-      } catch (e) {
-        console.log(e);
-        reject(e);
-        return;
-      }
-      try {
-        await OgGroupManager.manageApiData(ogResp);
+        await OgGroupManager.importGroups();
       } catch (e) {
         console.log(e);
         reject(e);
@@ -90,7 +62,7 @@ export class ApiCrawler {
       } catch (e) {
         this.apiCallErrors++;
         console.error(
-          `\x1b[31mApi call failed with status ${e.response.status} \x1b[0m`
+          `\x1b[31mApi call failed with status ${e.response?.status} \x1b[0m`
         );
         const limit = parseInt(url.searchParams.get("limit"));
         const newLimit = Math.floor(limit / 2);
