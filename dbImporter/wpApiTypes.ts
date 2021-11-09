@@ -1,5 +1,5 @@
-export type ogGroupRouteResponseType = {
-  data: ogGroupType[];
+export type wpGroupRouteResponseType = {
+  data: wpGroupType[];
   paging: {
     cursors: {
       before: string;
@@ -9,8 +9,8 @@ export type ogGroupRouteResponseType = {
   };
 };
 
-export type ogMemberRouteResponseType = {
-  data: ogMemberType[];
+export type wpMemberRouteResponseType = {
+  data: wpMemberType[];
   paging: {
     cursors: {
       before: string;
@@ -20,8 +20,8 @@ export type ogMemberRouteResponseType = {
   };
 };
 
-export type ogFeedRouteResponseType = {
-  data: ogFeedType[];
+export type wpFeedRouteResponseType = {
+  data: wpFeedType[];
   paging?: {
     previous: string;
     next: string;
@@ -32,8 +32,8 @@ export type ogFeedRouteResponseType = {
   };
 };
 
-export type ogCommentRouteResponseType = {
-  data: ogCommentType[];
+export type wpCommentRouteResponseType = {
+  data: wpCommentType[];
   paging?: {
     previous: string;
     next: string;
@@ -44,7 +44,7 @@ export type ogCommentRouteResponseType = {
   };
 };
 
-export type ogGroupType = {
+export type wpGroupType = {
   id: string;
   name: string;
   privacy: string;
@@ -54,7 +54,7 @@ export type ogGroupType = {
   description?: string;
 };
 
-export type ogMemberType = {
+export type wpMemberType = {
   id: string;
   name: string;
   email?: string;
@@ -72,7 +72,7 @@ export type ogMemberType = {
   active: boolean;
 };
 
-export type ogFeedType = {
+export type wpFeedType = {
   id: string;
   from: {
     name: string;
@@ -84,10 +84,10 @@ export type ogFeedType = {
   created_time: string;
   updated_time: string;
   full_picture?: string;
-  comments?: ogCommentRouteResponseType;
+  comments?: wpCommentRouteResponseType;
 };
 
-export type ogCommentType = {
+export type wpCommentType = {
   id: string;
   message: string;
   from: {

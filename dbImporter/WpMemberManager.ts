@@ -1,9 +1,10 @@
 /* eslint-disable no-async-promise-executor */
 
-import { ApiCrawler } from "./ApiCrawler";
+import { WpApiCrawler } from "./WpApiCrawler";
 import { Member } from "../server/models/Member";
-import { ogMemberRouteResponseType, ogMemberType } from "./ApiTypes";
+import { wpMemberRouteResponseType, wpMemberType } from "./wpApiTypes";
 import { Group } from "../server/models/Group";
+import { CrawlerReporter } from "./CrawlerReporter";
 
 export const MEMBER_LIMIT = 500;
 export const MEMBER_FIElDS = [
@@ -16,18 +17,18 @@ export const MEMBER_FIElDS = [
   "active",
 ];
 
-export class OgMemberManager {
+export class WpMemberManager {
   public static memberCount = 0;
   public static memberError = 0;
 
   public static importMembersByGroup(group: Group): Promise<void> {
     this.memberError = this.memberCount = 0;
     return new Promise(async (resolve, reject) => {
-      const url = new URL(group.ogId + "/members", process.env.OG_BASE_URL);
+      const url = new URL(group.wpId + "/members", process.env.OG_BASE_URL);
       url.searchParams.set("limit", MEMBER_LIMIT.toString());
       url.searchParams.set("fields", MEMBER_FIElDS.join());
       try {
-        const { data } = await ApiCrawler.getDataFromApiUrl(url);
+        const { data } = await WpApiCrawler.getDataFromApiUrl(url);
         await this.manageApiResponse(data, group.id);
         resolve();
       } catch (e) {
@@ -37,7 +38,7 @@ export class OgMemberManager {
   }
 
   private static manageApiResponse(
-    ogResp: ogMemberRouteResponseType,
+    ogResp: wpMemberRouteResponseType,
     groupId: string
   ): Promise<void> {
     return new Promise(async (resolve, reject) => {
@@ -46,7 +47,7 @@ export class OgMemberManager {
         try {
           const formatedUrl = new URL(ogResp.paging.next);
           formatedUrl.searchParams.set("limit", MEMBER_LIMIT.toString());
-          const newResp = await ApiCrawler.getDataFromApiUrl(formatedUrl);
+          const newResp = await WpApiCrawler.getDataFromApiUrl(formatedUrl);
           await this.manageApiResponse(newResp.data, groupId);
           resolve();
         } catch (e) {
@@ -54,13 +55,15 @@ export class OgMemberManager {
         }
       } else {
         console.log(` with \x1b[31m${this.memberError}\x1b[0m errors`);
+        CrawlerReporter.members += this.memberCount;
+        CrawlerReporter.memberErrors += this.memberError;
         resolve();
       }
     });
   }
 
   private static iterateEntries(
-    members: ogMemberType[],
+    members: wpMemberType[],
     groupId
   ): Promise<void> {
     return new Promise(async (resolve) => {
@@ -86,7 +89,7 @@ export class OgMemberManager {
       const url = new URL(id, process.env.OG_BASE_URL);
       url.searchParams.set("fields", MEMBER_FIElDS.join());
       try {
-        const { data } = await ApiCrawler.getDataFromApiUrl(url);
+        const { data } = await WpApiCrawler.getDataFromApiUrl(url);
         const member = await this.upsertMember(data);
         resolve(member);
       } catch (e) {
@@ -95,10 +98,10 @@ export class OgMemberManager {
     });
   }
 
-  private static upsertMember(rawMember: ogMemberType): Promise<Member> {
+  private static upsertMember(rawMember: wpMemberType): Promise<Member> {
     return new Promise(async (resolve, reject) => {
       try {
-        const filter = { ogId: rawMember.id };
+        const filter = { wpId: rawMember.id };
         const updatedValues = {
           name: rawMember.name,
           email: rawMember.email ? rawMember.email : null,
@@ -109,7 +112,7 @@ export class OgMemberManager {
             ? rawMember.account_claim_time
             : null,
           active: rawMember.active,
-          ogId: rawMember.id,
+          wpId: rawMember.id,
         };
         const updatedMember = await Member.findOneAndUpdate(
           filter,

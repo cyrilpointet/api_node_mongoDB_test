@@ -3,10 +3,11 @@
 import { Feed } from "../server/models/Feed";
 import { Member } from "../server/models/Member";
 import { Group } from "../server/models/Group";
-import { ogFeedRouteResponseType, ogFeedType } from "./ApiTypes";
-import { ApiCrawler } from "./ApiCrawler";
-import { OgCommentManager } from "./OgCommentManager";
-import { OgMemberManager } from "./OgMemberManager";
+import { wpFeedRouteResponseType, wpFeedType } from "./wpApiTypes";
+import { WpApiCrawler } from "./WpApiCrawler";
+import { WpCommentManager } from "./WpCommentManager";
+import { WpMemberManager } from "./WpMemberManager";
+import { CrawlerReporter } from "./CrawlerReporter";
 
 const FEED_LIMIT = 500;
 
@@ -24,7 +25,7 @@ const FEED_FIElDS = [
   `comments.fields(${COMMENT_FIELDS.join()}).limit(10)`,
 ];
 
-export class OgFeedManager {
+export class WpFeedManager {
   public static feedError = 0;
   public static unknownUsers = 0;
 
@@ -32,11 +33,11 @@ export class OgFeedManager {
     this.feedError = this.unknownUsers = 0;
     process.stdout.write("Feed and comments: ");
     return new Promise(async (resolve, reject) => {
-      const url = new URL(group.ogId + "/feed", process.env.OG_BASE_URL);
+      const url = new URL(group.wpId + "/feed", process.env.OG_BASE_URL);
       url.searchParams.set("limit", FEED_LIMIT.toString());
       url.searchParams.set("fields", FEED_FIElDS.join());
       try {
-        const { data } = await ApiCrawler.getDataFromApiUrl(url);
+        const { data } = await WpApiCrawler.getDataFromApiUrl(url);
         await this.manageApiResponse(data, group.id);
         resolve();
       } catch (e) {
@@ -46,7 +47,7 @@ export class OgFeedManager {
   }
 
   private static manageApiResponse(
-    wpResp: ogFeedRouteResponseType,
+    wpResp: wpFeedRouteResponseType,
     groupId: string
   ): Promise<void> {
     return new Promise(async (resolve, reject) => {
@@ -56,7 +57,7 @@ export class OgFeedManager {
         try {
           const formatedUrl = new URL(wpResp.paging.next);
           formatedUrl.searchParams.set("limit", FEED_LIMIT.toString());
-          const newResp = await ApiCrawler.getDataFromApiUrl(formatedUrl);
+          const newResp = await WpApiCrawler.getDataFromApiUrl(formatedUrl);
           await this.manageApiResponse(newResp.data, groupId);
           resolve();
         } catch (e) {
@@ -72,7 +73,7 @@ export class OgFeedManager {
   }
 
   private static interateEntries(
-    feeds: ogFeedType[],
+    feeds: wpFeedType[],
     groupId: string
   ): Promise<void> {
     return new Promise(async (resolve) => {
@@ -80,8 +81,10 @@ export class OgFeedManager {
         process.stdout.write(".");
         try {
           await this.upsertFeed(feeds[i], groupId);
+          CrawlerReporter.feeds++;
         } catch (e) {
           this.feedError++;
+          CrawlerReporter.feedErrors++;
         }
       }
       resolve();
@@ -89,21 +92,22 @@ export class OgFeedManager {
   }
 
   private static upsertFeed(
-    rawFeed: ogFeedType,
+    rawFeed: wpFeedType,
     groupId: string
   ): Promise<Feed> {
     return new Promise(async (resolve, reject) => {
       let updatedFeed;
       try {
-        const filter = { ogId: rawFeed.id };
-        let author = await Member.findOne({ ogId: rawFeed.from.id });
+        const filter = { wpId: rawFeed.id };
+        let author = await Member.findOne({ wpId: rawFeed.from.id });
         // Si le membre est inconnu, on essai de l'importer
         if (!author) {
           try {
-            author = await OgMemberManager.importMemberFromId(rawFeed.from.id);
+            author = await WpMemberManager.importMemberFromId(rawFeed.from.id);
           } catch {
             author = null;
             this.unknownUsers++;
+            CrawlerReporter.memberErrors++;
           }
         }
 
@@ -114,7 +118,7 @@ export class OgFeedManager {
           pictureLink: rawFeed.full_picture ? rawFeed.full_picture : null,
           createdAt: rawFeed.created_time,
           updatedAt: rawFeed.updated_time,
-          ogId: rawFeed.id,
+          wpId: rawFeed.id,
           author: author._id ? author._id : null,
           group: groupId,
         };
@@ -129,7 +133,7 @@ export class OgFeedManager {
 
       if (rawFeed.comments) {
         try {
-          await OgCommentManager.manageApiResponse(
+          await WpCommentManager.manageApiResponse(
             rawFeed.comments,
             updatedFeed.id
           );

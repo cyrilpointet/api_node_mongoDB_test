@@ -1,10 +1,11 @@
 /* eslint-disable no-async-promise-executor */
 
 import { Group } from "../server/models/Group";
-import { ApiCrawler } from "./ApiCrawler";
-import { ogGroupRouteResponseType, ogGroupType } from "./ApiTypes";
-import { OgMemberManager } from "./OgMemberManager";
-import { OgFeedManager } from "./OgFeedManager";
+import { WpApiCrawler } from "./WpApiCrawler";
+import { wpGroupRouteResponseType, wpGroupType } from "./wpApiTypes";
+import { WpMemberManager } from "./WpMemberManager";
+import { WpFeedManager } from "./WpFeedManager";
+import { CrawlerReporter } from "./CrawlerReporter";
 
 const GROUP_FIELDS = [
   "name",
@@ -15,10 +16,10 @@ const GROUP_FIELDS = [
   "updated_time",
 ];
 
-const GROUP_LIMIT = 250;
+// TODO => maj à 500 pour crawl toute l'api
+const GROUP_LIMIT = 50;
 
-export class OgGroupManager {
-  public static groupCount = 0;
+export class WpGroupManager {
   public static groupError = 0;
 
   public static importGroups(): Promise<void> {
@@ -30,7 +31,7 @@ export class OgGroupManager {
       url.searchParams.set("limit", GROUP_LIMIT.toString());
       url.searchParams.set("fields", GROUP_FIELDS.join());
       try {
-        const { data } = await ApiCrawler.getDataFromApiUrl(url);
+        const { data } = await WpApiCrawler.getDataFromApiUrl(url);
         await this.manageApiData(data);
         resolve();
       } catch (e) {
@@ -40,7 +41,7 @@ export class OgGroupManager {
   }
 
   private static manageApiData(
-    ogResp: ogGroupRouteResponseType
+    ogResp: wpGroupRouteResponseType
   ): Promise<void> {
     return new Promise(async (resolve, reject) => {
       await this.iterateEntries(ogResp.data);
@@ -50,32 +51,29 @@ export class OgGroupManager {
         try {
           const formatedUrl = new URL(ogResp.paging.next);
           formatedUrl.searchParams.set("limit", GROUP_LIMIT.toString());
-          const newResp = await ApiCrawler.getDataFromApiUrl(formatedUrl);
+          const newResp = await WpApiCrawler.getDataFromApiUrl(formatedUrl);
           await this.manageApiData(newResp.data);
           resolve();
         } catch (e) {
           reject(e);
         }
       } else {
-        console.log(
-          `\x1b[32m${this.groupCount}\x1b[0m groups updated with \x1b[31m${this.groupError}\x1b[0m errors.`
-        );
         resolve();
       }
     });
   }
 
-  private static iterateEntries(groups: ogGroupType[]): Promise<void> {
+  private static iterateEntries(groups: wpGroupType[]): Promise<void> {
     return new Promise(async (resolve) => {
       for (let i = 0; i < groups.length; i++) {
         try {
           console.log(`Updating ${groups[i].name}`);
           await this.upsertGroup(groups[i]);
-          this.groupCount++;
+          CrawlerReporter.groups++;
           console.log(
             `\x1b[32m${groups[i].name}\x1b[0m has been successfully updated`
           );
-          console.log(`Total :  \x1b[32m${this.groupCount}\x1b[0m groups`);
+          CrawlerReporter.printShortReport();
         } catch (e) {
           this.groupError++;
         }
@@ -84,10 +82,10 @@ export class OgGroupManager {
     });
   }
 
-  private static upsertGroup(rawGroup: ogGroupType): Promise<Group> {
+  private static upsertGroup(rawGroup: wpGroupType): Promise<Group> {
     return new Promise(async (resolve, reject) => {
       try {
-        const filter = { ogId: rawGroup.id };
+        const filter = { wpId: rawGroup.id };
         const updatedValues = {
           name: rawGroup.name,
           description: rawGroup.description ? rawGroup.description : null,
@@ -95,7 +93,7 @@ export class OgGroupManager {
           createdAt: rawGroup.created_time,
           updatedAt: rawGroup.updated_time,
           active: !rawGroup.archived,
-          ogId: rawGroup.id,
+          wpId: rawGroup.id,
         };
         const updatedGroup = await Group.findOneAndUpdate(
           filter,
@@ -105,8 +103,8 @@ export class OgGroupManager {
             upsert: true,
           }
         );
-        await OgMemberManager.importMembersByGroup(updatedGroup);
-        await OgFeedManager.importFeedsByGroup(updatedGroup);
+        await WpMemberManager.importMembersByGroup(updatedGroup);
+        await WpFeedManager.importFeedsByGroup(updatedGroup);
         resolve(updatedGroup);
       } catch (e) {
         reject(e);

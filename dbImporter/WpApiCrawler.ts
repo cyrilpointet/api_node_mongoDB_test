@@ -1,48 +1,20 @@
 /* eslint-disable no-async-promise-executor */
 
 import axios from "axios";
-import { OgGroupManager } from "./OgGroupManager";
-import { Member } from "../server/models/Member";
-import { Group } from "../server/models/Group";
-import { Feed } from "../server/models/Feed";
-import { Comment } from "../server/models/Comment";
+import { WpGroupManager } from "./WpGroupManager";
+import { CrawlerReporter } from "./CrawlerReporter";
 
-export type apiCrawlerReportType = {
-  apiCallCount: number;
-  apiCallErrors: number;
-  groupCount: number;
-  memberCount: number;
-  feedCount: number;
-  commentCount: number;
-};
-
-export class ApiCrawler {
-  public static apiCallCount = 0;
-  public static apiCallErrors = 0;
-  public static start(): Promise<apiCrawlerReportType> {
-    this.apiCallCount = 0;
-    this.apiCallErrors = 0;
+export class WpApiCrawler {
+  public static start(): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        await OgGroupManager.importGroups();
+        await WpGroupManager.importGroups();
       } catch (e) {
         console.log(e);
         reject(e);
         return;
       }
-
-      const groupCount = await Group.find({}).count();
-      const memberCount = await Member.find({}).count();
-      const feedCount = await Feed.find({}).count();
-      const commentCount = await Comment.find({}).count();
-      resolve({
-        groupCount,
-        memberCount,
-        feedCount,
-        commentCount,
-        apiCallCount: this.apiCallCount,
-        apiCallErrors: this.apiCallErrors,
-      });
+      resolve();
     });
   }
 
@@ -54,13 +26,13 @@ export class ApiCrawler {
     };
     return new Promise(async (resolve, reject) => {
       try {
-        this.apiCallCount++;
+        CrawlerReporter.apiCalls++;
         const resp = await axios.get(url.toString(), {
           headers,
         });
         resolve(resp);
       } catch (e) {
-        this.apiCallErrors++;
+        CrawlerReporter.apiErrors++;
         console.error(
           `\x1b[31mApi call failed with status ${e.response?.status} \x1b[0m`
         );

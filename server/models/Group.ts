@@ -7,7 +7,7 @@ const GroupSchema = new Schema({
   createdAt: { type: Date, required: true, default: new Date() },
   updatedAt: { type: Date, required: true, default: new Date() },
   active: { type: Boolean, required: true, default: true },
-  ogId: { type: String, required: true, unique: true },
+  wpId: { type: String, required: true, unique: true },
 });
 
 // Virtuals -------------------------------------------

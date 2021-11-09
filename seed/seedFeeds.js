@@ -20,7 +20,7 @@ export const seedFeeds = async () => {
 
   for (let i = 0; i < members.length; i++) {
     const feed = new Feed({
-      ogId: "temp",
+      wpId: "temp",
       type: "coucou",
       group: members[i].groups[0],
       author: members[i],
@@ -30,7 +30,7 @@ export const seedFeeds = async () => {
         Math.floor(Math.random() * 200) + 100
       }/${Math.floor(Math.random() * 200) + 100}`,
     });
-    feed.ogId = feed._id;
+    feed.wpId = feed._id;
     await feed.save();
   }
 };

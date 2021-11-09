@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const CommentSchema = new Schema({
-  ogId: { type: String, required: true, unique: true },
+  wpId: { type: String, required: true, unique: true },
   message: { type: String, default: null },
   createdAt: { type: Date, required: true, default: new Date() },
   feed: {

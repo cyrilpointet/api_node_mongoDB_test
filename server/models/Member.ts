@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const MemberSchema = new Schema({
-  ogId: { type: String, required: true, unique: true },
+  wpId: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   email: { type: String, default: null },
   department: { type: String, default: null },

@@ -13,13 +13,13 @@ export const seedMembers = async () => {
 
   for (let i = 0; i < newMembers.data.results.length; i++) {
     const member = new Member({
-      ogId: "temp",
+      wpId: "temp",
       name: `${newMembers.data.results[i].name.last} ${newMembers.data.results[i].name.first}`,
       email: newMembers.data.results[i].email,
       pictureLink: newMembers.data.results[i].picture.thumbnail,
       department: newMembers.data.results[i].location.city,
     });
-    member.ogId = member._id;
+    member.wpId = member._id;
 
     // Ajout des groupes
     let joinedGroups = [];

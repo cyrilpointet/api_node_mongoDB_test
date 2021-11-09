@@ -3,11 +3,12 @@
 import mongoose from "mongoose";
 import bcryptjs from "bcryptjs";
 import { seedAdmin } from "../seed/seedAdmin";
-import { ApiCrawler, apiCrawlerReportType } from "./ApiCrawler";
+import { WpApiCrawler } from "./WpApiCrawler";
 import { User } from "../server/models/User";
+import { CrawlerReporter } from "./CrawlerReporter";
 
 class DatabaseImporter {
-  public static async populateDb(): Promise<apiCrawlerReportType> {
+  public static async populateDb(): Promise<void> {
     console.log(`
   _  __        _                _      _          _                     _           
  | |/ /___ _ _(_)_ _  __ _   __| |__ _| |_ __ _  (_)_ __  _ __  ___ _ _| |_ ___ _ _ 
@@ -40,10 +41,12 @@ class DatabaseImporter {
       try {
         // Créer un admin par defaut si il n'y en a aucun en base
         await seedAdmin();
-        const report = await ApiCrawler.start();
+        await WpApiCrawler.start();
+        await CrawlerReporter.printCompleteReport();
         await mongoose.disconnect();
-        resolve(report);
+        resolve();
       } catch (e) {
+        await CrawlerReporter.printCompleteReport();
         await mongoose.disconnect();
         reject(e);
       }
@@ -52,17 +55,10 @@ class DatabaseImporter {
 }
 
 DatabaseImporter.populateDb()
-  .then((report) => {
-    console.log(
-      `DB updated with \x1b[32m${report.apiCallCount} api calls \x1b[0mand \x1b[31m${report.apiCallErrors} errors\x1b[0m`
-    );
-    console.log("Total in database :");
-    console.log(`\x1b[34m${report.groupCount}\x1b[0m groups`);
-    console.log(`\x1b[34m${report.memberCount}\x1b[0m members`);
-    console.log(`\x1b[34m${report.feedCount}\x1b[0m feeds`);
-    console.log(`\x1b[34m${report.commentCount}\x1b[0m comments`);
+  .then(async () => {
+    console.log(`\x1b[32m****** DB updated successfully updated ******\x1b[0m`);
   })
-  .catch((e) => {
-    console.error("Import stopped");
+  .catch(async (e) => {
+    console.error("\x1b[31mError: import stopped\x1b[0m");
     console.error(e.message);
   });

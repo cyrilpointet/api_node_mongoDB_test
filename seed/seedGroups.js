@@ -5,26 +5,26 @@ export const seedGroups = async () => {
 
   const gryffondor = new Group({
     name: "gryffondor",
-    ogId: "temp",
+    wpId: "temp",
   });
-  gryffondor.ogId = gryffondor._id;
+  gryffondor.wpId = gryffondor._id;
   await gryffondor.save();
   const serdaigle = new Group({
     name: "serdaigle",
-    ogId: "temp",
+    wpId: "temp",
   });
-  serdaigle.ogId = serdaigle._id;
+  serdaigle.wpId = serdaigle._id;
   await serdaigle.save();
   const poufsouffle = new Group({
     name: "poufsouffle",
-    ogId: "temp",
+    wpId: "temp",
   });
-  poufsouffle.ogId = poufsouffle._id;
+  poufsouffle.wpId = poufsouffle._id;
   await poufsouffle.save();
   const serpentard = new Group({
     name: "serpentard",
-    ogId: "temp",
+    wpId: "temp",
   });
-  serpentard.ogId = serpentard._id;
+  serpentard.wpId = serpentard._id;
   await serpentard.save();
 };
