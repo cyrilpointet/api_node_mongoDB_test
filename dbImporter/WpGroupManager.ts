@@ -17,10 +17,10 @@ const GROUP_FIELDS = [
 ];
 
 // TODO => maj à 500 pour crawl toute l'api
-const GROUP_LIMIT = 50;
+const GROUP_LIMIT = 10;
 
 export class WpGroupManager {
-  public static groupError = 0;
+  private static pendingRequests: Promise<void>[] = [];
 
   public static importGroups(): Promise<void> {
     return new Promise(async (resolve, reject) => {
@@ -67,17 +67,15 @@ export class WpGroupManager {
     return new Promise(async (resolve) => {
       for (let i = 0; i < groups.length; i++) {
         try {
-          console.log(`Updating ${groups[i].name}`);
           await this.upsertGroup(groups[i]);
           CrawlerReporter.groups++;
-          console.log(
-            `\x1b[32m${groups[i].name}\x1b[0m has been successfully updated`
-          );
-          CrawlerReporter.printShortReport();
         } catch (e) {
-          this.groupError++;
+          CrawlerReporter.groupErrors++;
         }
+        CrawlerReporter.printShortReport();
       }
+      await Promise.all(this.pendingRequests);
+      this.pendingRequests = [];
       resolve();
     });
   }
@@ -103,8 +101,12 @@ export class WpGroupManager {
             upsert: true,
           }
         );
-        await WpMemberManager.importMembersByGroup(updatedGroup);
-        await WpFeedManager.importFeedsByGroup(updatedGroup);
+        this.pendingRequests.push(
+          WpMemberManager.importMembersByGroup(updatedGroup)
+        );
+        this.pendingRequests.push(
+          WpFeedManager.importFeedsByGroup(updatedGroup)
+        );
         resolve(updatedGroup);
       } catch (e) {
         reject(e);

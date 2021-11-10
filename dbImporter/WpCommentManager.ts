@@ -18,14 +18,13 @@ export class WpCommentManager {
     return new Promise(async (resolve, reject) => {
       const comments = ogResp.data;
       for (let i = 0; i < comments.length; i++) {
-        process.stdout.write("c");
         try {
           await this.upsertComment(comments[i], feedId);
           CrawlerReporter.comments++;
         } catch (e) {
-          console.error(`invalid data comment ${comments[i].id}`);
           CrawlerReporter.commentErrors++;
         }
+        CrawlerReporter.printShortReport();
       }
       if (ogResp.paging?.next && ogResp.paging?.cursors) {
         try {

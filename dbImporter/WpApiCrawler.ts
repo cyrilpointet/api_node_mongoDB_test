@@ -1,10 +1,59 @@
 /* eslint-disable no-async-promise-executor */
 
 import axios from "axios";
+import mongoose from "mongoose";
+import bcryptjs from "bcryptjs";
 import { WpGroupManager } from "./WpGroupManager";
 import { CrawlerReporter } from "./CrawlerReporter";
+import { User } from "../server/models/User";
+import { seedAdmin } from "../seed/seedAdmin";
 
 export class WpApiCrawler {
+  public static async populateDb(): Promise<void> {
+    console.log(`
+  _  __        _                _      _          _                     _           
+ | |/ /___ _ _(_)_ _  __ _   __| |__ _| |_ __ _  (_)_ __  _ __  ___ _ _| |_ ___ _ _ 
+ | ' </ -_) '_| | ' \\/ _\` | / _\` / _\` |  _/ _\` | | | '  \\| '_ \\/ _ \\ '_|  _/ -_) '_|
+ |_|\\_\\___|_| |_|_||_\\__, | \\__,_\\__,_|\\__\\__,_| |_|_|_|_| .__/\\___/_|  \\__\\___|_|  
+                     |___/                               |_|                        
+`);
+    await mongoose.connect(process.env.URL_MONGO, {
+      useNewUrlParser: true,
+      dbName: process.env.DB_NAME,
+      user: process.env.MONGO_INITDB_ROOT_USERNAME,
+      pass: process.env.MONGO_INITDB_ROOT_PASSWORD,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+    });
+
+    const admins = await User.find({});
+    if (1 > admins.length) {
+      const hash = await bcryptjs.hash("admin", 10);
+      const user = new User({
+        email: "admin@admin.admin",
+        password: hash,
+        firstName: "admin",
+        lastName: "admin",
+      });
+      await user.save();
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Créer un admin par defaut si il n'y en a aucun en base
+        await seedAdmin();
+        await this.start();
+        await CrawlerReporter.printCompleteReport();
+        await mongoose.disconnect();
+        resolve();
+      } catch (e) {
+        await CrawlerReporter.printCompleteReport();
+        await mongoose.disconnect();
+        reject(e);
+      }
+    });
+  }
+
   public static start(): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
@@ -31,20 +80,18 @@ export class WpApiCrawler {
           headers,
         });
         resolve(resp);
+        CrawlerReporter.printShortReport();
       } catch (e) {
         CrawlerReporter.apiErrors++;
-        console.error(
-          `\x1b[31mApi call failed with status ${e.response?.status} \x1b[0m`
-        );
         const limit = parseInt(url.searchParams.get("limit"));
         const newLimit = Math.floor(limit / 2);
         if (newLimit > 0) {
           url.searchParams.set("limit", newLimit.toString());
-          console.error(`Retry with limit ${newLimit}`);
           const limitedResp = await this.getDataFromApiUrl(url);
           resolve(limitedResp);
         } else {
           reject(e);
+          CrawlerReporter.printShortReport();
         }
       }
     });

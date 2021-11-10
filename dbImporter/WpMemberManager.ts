@@ -18,11 +18,7 @@ export const MEMBER_FIElDS = [
 ];
 
 export class WpMemberManager {
-  public static memberCount = 0;
-  public static memberError = 0;
-
   public static importMembersByGroup(group: Group): Promise<void> {
-    this.memberError = this.memberCount = 0;
     return new Promise(async (resolve, reject) => {
       const url = new URL(group.wpId + "/members", process.env.OG_BASE_URL);
       url.searchParams.set("limit", MEMBER_LIMIT.toString());
@@ -54,9 +50,6 @@ export class WpMemberManager {
           reject(e);
         }
       } else {
-        console.log(` with \x1b[31m${this.memberError}\x1b[0m errors`);
-        CrawlerReporter.members += this.memberCount;
-        CrawlerReporter.memberErrors += this.memberError;
         resolve();
       }
     });
@@ -72,13 +65,11 @@ export class WpMemberManager {
           const member = await this.upsertMember(members[i]);
           member.groups.push(groupId);
           await member.save();
-          this.memberCount++;
-          process.stdout.write(
-            `\rMembers: \x1b[32m${this.memberCount}\x1b[0m members updated`
-          );
+          CrawlerReporter.members++;
         } catch (e) {
-          this.memberError++;
+          CrawlerReporter.memberErrors++;
         }
+        CrawlerReporter.printShortReport();
       }
       resolve();
     });

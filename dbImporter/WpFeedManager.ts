@@ -26,12 +26,7 @@ const FEED_FIElDS = [
 ];
 
 export class WpFeedManager {
-  public static feedError = 0;
-  public static unknownUsers = 0;
-
   public static importFeedsByGroup(group: Group): Promise<void> {
-    this.feedError = this.unknownUsers = 0;
-    process.stdout.write("Feed and comments: ");
     return new Promise(async (resolve, reject) => {
       const url = new URL(group.wpId + "/feed", process.env.OG_BASE_URL);
       url.searchParams.set("limit", FEED_LIMIT.toString());
@@ -64,9 +59,6 @@ export class WpFeedManager {
           reject(e);
         }
       } else {
-        console.log(
-          ` done with ${this.feedError} errors and ${this.unknownUsers} unknown members`
-        );
         resolve();
       }
     });
@@ -78,15 +70,14 @@ export class WpFeedManager {
   ): Promise<void> {
     return new Promise(async (resolve) => {
       for (let i = 0; i < feeds.length; i++) {
-        process.stdout.write(".");
         try {
           await this.upsertFeed(feeds[i], groupId);
           CrawlerReporter.feeds++;
         } catch (e) {
-          this.feedError++;
           CrawlerReporter.feedErrors++;
         }
       }
+      CrawlerReporter.printShortReport();
       resolve();
     });
   }
@@ -104,9 +95,9 @@ export class WpFeedManager {
         if (!author) {
           try {
             author = await WpMemberManager.importMemberFromId(rawFeed.from.id);
+            CrawlerReporter.members++;
           } catch {
             author = null;
-            this.unknownUsers++;
             CrawlerReporter.memberErrors++;
           }
         }

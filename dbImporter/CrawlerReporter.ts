@@ -40,8 +40,8 @@ export class CrawlerReporter {
   }
 
   public static printShortReport(): void {
-    console.log(
-      `Total : \x1b[32m${this.groups}\x1b[0m groups, \x1b[32m${this.members}\x1b[0m members, \x1b[32m${this.feeds}\x1b[0m feeds, \x1b[32m${this.comments}\x1b[0m comments`
+    process.stdout.write(
+      `\rApi calls: \x1b[32m${this.apiCalls}\x1b[0m - \x1b[31m${this.apiErrors}\x1b[0m, groups: \x1b[32m${this.groups}\x1b[0m - \x1b[31m${this.groupErrors}\x1b[0m, members: \x1b[32m${this.members}\x1b[0m - \x1b[31m${this.memberErrors}\x1b[0m, feeds: \x1b[32m${this.feeds}\x1b[0m - \x1b[31m${this.feedErrors}\x1b[0m, comments: \x1b[32m${this.comments}\x1b[0m - \x1b[31m${this.commentErrors}\x1b[0m`
     );
   }
 
@@ -49,6 +49,9 @@ export class CrawlerReporter {
     return new Promise(async (resolve) => {
       const dbState = await this.getDbState();
       console.log("****** Terminated ******");
+      console.log(
+        `Passed \x1b[32m${this.apiCalls}\x1b[0m groups with \x1b[31m${this.apiErrors}\x1b[0m errors`
+      );
       console.log("Entries updated:");
       console.log(
         `\x1b[32m${this.groups}\x1b[0m groups with \x1b[31m${this.groupErrors}\x1b[0m errors`
@@ -60,7 +63,7 @@ export class CrawlerReporter {
         `\x1b[32m${this.feeds}\x1b[0m feeds with \x1b[31m${this.feedErrors}\x1b[0m errors`
       );
       console.log(
-        `\x1b[32m${this.comments}\x1b[0m groups with \x1b[31m${this.commentErrors}\x1b[0m errors`
+        `\x1b[32m${this.comments}\x1b[0m comments with \x1b[31m${this.commentErrors}\x1b[0m errors`
       );
       console.log("Total in database :");
       console.log(`\x1b[32m${dbState.groups}\x1b[0m groups`);
