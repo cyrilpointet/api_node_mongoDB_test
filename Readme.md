@@ -26,10 +26,8 @@ Password : admin
 - **seed_db.sh**<br>
   Remplit la base avec des fixtures. Génère également un compte admin pour se connecter au BO.
 
-
 - **import_db.sh**<br>
   Importe les données des databases de workplace
-
 
 - **webpack_watch.sh**<br>
   Lance le watcher webpack

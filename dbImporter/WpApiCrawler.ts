@@ -7,12 +7,8 @@ import { WpGroupManager } from "./WpGroupManager";
 import { CrawlerReporter } from "./CrawlerReporter";
 import { User } from "../server/models/User";
 import { seedAdmin } from "../seed/seedAdmin";
-import { eventBus } from "./eventBus";
 
 export class WpApiCrawler {
-  private static pendingPromises = 0;
-  private static resolve = null;
-
   public static async populateDb(): Promise<void> {
     console.log(`
   _  __        _                _      _          _                     _           
@@ -59,31 +55,16 @@ export class WpApiCrawler {
   }
 
   public static start(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.resolve = resolve;
-      eventBus.on("promisePendind", () => {
-        this.pendingPromises++;
-        CrawlerReporter.pendingPromises++;
-      });
-      eventBus.on("promiseResolved", () => {
-        this.handlePromiseResolvedEvent();
-      });
-
+    return new Promise(async (resolve, reject) => {
       try {
-        WpGroupManager.importGroups();
+        await WpGroupManager.importGroups();
       } catch (e) {
         console.log(e);
         reject(e);
+        return;
       }
+      resolve();
     });
-  }
-
-  private static handlePromiseResolvedEvent(): void {
-    this.pendingPromises--;
-    CrawlerReporter.pendingPromises--;
-    if (1 > this.pendingPromises) {
-      this.resolve();
-    }
   }
 
   // On met un any pour accepter tous les types de réponses de l'api wp

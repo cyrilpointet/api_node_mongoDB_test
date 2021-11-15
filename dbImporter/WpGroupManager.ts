@@ -6,7 +6,6 @@ import { wpGroupRouteResponseType, wpGroupType } from "./wpApiTypes";
 import { WpMemberManager } from "./WpMemberManager";
 import { WpFeedManager } from "./WpFeedManager";
 import { CrawlerReporter } from "./CrawlerReporter";
-import { eventBus } from "./eventBus";
 
 const GROUP_FIELDS = [
   "name",
@@ -17,9 +16,12 @@ const GROUP_FIELDS = [
   "updated_time",
 ];
 
-const GROUP_LIMIT = 500;
+// TODO => maj à 500 pour crawl toute l'api
+const GROUP_LIMIT = 10;
 
 export class WpGroupManager {
+  private static pendingRequests: Promise<void>[] = [];
+
   public static importGroups(): Promise<void> {
     return new Promise(async (resolve, reject) => {
       const url = new URL(
@@ -44,7 +46,8 @@ export class WpGroupManager {
     return new Promise(async (resolve, reject) => {
       await this.iterateEntries(ogResp.data);
 
-      if (ogResp.paging?.next) {
+      // TODO => maj condition pour crawl toute l'api
+      if (ogResp.paging?.next && ogResp.paging === "toto") {
         try {
           const formatedUrl = new URL(ogResp.paging.next);
           formatedUrl.searchParams.set("limit", GROUP_LIMIT.toString());
@@ -71,6 +74,8 @@ export class WpGroupManager {
         }
         CrawlerReporter.printShortReport();
       }
+      await Promise.all(this.pendingRequests);
+      this.pendingRequests = [];
       resolve();
     });
   }
@@ -96,22 +101,12 @@ export class WpGroupManager {
             upsert: true,
           }
         );
-        eventBus.emit("promisePendind");
-        WpMemberManager.importMembersByGroup(updatedGroup)
-          .then(() => {
-            eventBus.emit("promiseResolved");
-          })
-          .catch(() => {
-            eventBus.emit("promiseResolved");
-          });
-        eventBus.emit("promisePendind");
-        WpFeedManager.importFeedsByGroup(updatedGroup)
-          .then(() => {
-            eventBus.emit("promiseResolved");
-          })
-          .catch(() => {
-            eventBus.emit("promiseResolved");
-          });
+        this.pendingRequests.push(
+          WpMemberManager.importMembersByGroup(updatedGroup)
+        );
+        this.pendingRequests.push(
+          WpFeedManager.importFeedsByGroup(updatedGroup)
+        );
         resolve(updatedGroup);
       } catch (e) {
         reject(e);
