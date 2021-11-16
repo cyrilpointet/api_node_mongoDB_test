@@ -1,4 +1,5 @@
 NODE := docker-compose run --rm node
+NODE_EXEC := docker-compose exec node
 
 node_modules:
 	$(NODE) yarn install
@@ -20,7 +21,7 @@ shell:
 	$(NODE) bash
 
 watch:
-	$(NODE) yarn watch
+	$(NODE_EXEC) yarn watch
 
 import:
 	$(NODE) yarn import-database
