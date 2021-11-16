@@ -2,14 +2,16 @@ version: '3'
 
 services:
   node:
+    image: node:14
     build: .
+    working_dir: /app
     volumes:
       - ".:/app"
     ports:
       - "8081:3000"
     links:
       - mongo
-    command: bash -c "cd /app && ./node_modules/.bin/pm2 start startup.json --name API --no-daemon"
+    command: ["yarn", "start"]
     environment:
       - URL_MONGO=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
@@ -25,8 +27,6 @@ services:
     image: mongo:4.0
     volumes:
       - "./mongo/data:/data/db"
-    ports:
-      - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
