@@ -50,7 +50,7 @@ export class CrawlerReporter {
       const dbState = await this.getDbState();
       console.log("****** Terminated ******");
       console.log(
-        `Passed \x1b[32m${this.apiCalls}\x1b[0m calls with \x1b[31m${this.apiErrors}\x1b[0m errors`
+        `Passed \x1b[32m${this.apiCalls}\x1b[0m calls with \x1b[31m${this.apiErrors}\x1b[0m errorsdocker ps`
       );
       console.log("Entries updated:");
       console.log(

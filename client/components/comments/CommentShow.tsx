@@ -11,7 +11,7 @@ const getAuthorName = (comment): string => {
   return comment.author.name;
 };
 
-export const CommenShow: React.FunctionComponent = (props) => {
+export const CommentShow: React.FunctionComponent = (props) => {
   return (
     <Show {...props}>
       <SimpleShowLayout>

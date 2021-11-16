@@ -1,7 +1,5 @@
 #!/bin/bash -eu
 
-docker-compose down
-
 echo "
   _  __         _
  | |/ /        (_)
@@ -12,6 +10,8 @@ echo "
                          __/ |
                         |___/
 "
-echo "Server is running: http://localhost:8081"
+echo "Serveur is running: http://localhost:8081"
 
-docker-compose up
+echo "Generating API doc"
+bin/apidoc.sh
+echo "API doc: http://localhost:8081/doc/"
