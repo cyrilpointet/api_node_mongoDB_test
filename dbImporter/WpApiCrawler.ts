@@ -80,7 +80,7 @@ export class WpApiCrawler {
         CrawlerReporter.printShortReport();
       } catch (e) {
         CrawlerReporter.apiErrors++;
-        if (500 !== e.response.status) {
+        if (500 !== e.response?.status) {
           reject(e);
           return;
         }
