@@ -12,7 +12,6 @@ module.exports = {
   // our entry server file
   entry: {
     main: "./server/www.js",
-    seeder: "./seed/seeder.js",
     databaseImporter: "./dbImporter/DatabaseImporter.ts",
   },
   // should be here so webpack knows that it handles node packages

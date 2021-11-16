@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "watch": "webpack --config webpack.config.js --watch",
-    "seed": "node ./build/seeder.bundle.js",
     "build-dev": "webpack --config webpack.config.js",
     "import-database": "node ./build/databaseImporter.bundle.js",
     "start": "./node_modules/.bin/pm2 start startup.json --name API --no-daemon"
