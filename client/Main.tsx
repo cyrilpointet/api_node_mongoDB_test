@@ -4,7 +4,7 @@ import { Admin, Resource } from "react-admin";
 import { setDataProvider } from "./providers/dataProviderSetter";
 import { setAuthProvider } from "./providers/authProviderSetter";
 
-import { KeringDashbord } from "./components/KeringDashbord";
+import { KeringDashboard } from "./components/KeringDashbord";
 // import { ArticleList } from "./components/products/ArticleList";
 // import { ArticleEdit } from "./components/products/ArticleEdit";
 // import { ArticleCreate } from "./components/products/ArticleCreate";
@@ -27,7 +27,7 @@ const authProvider = setAuthProvider(BASE_URL + "/user/login");
 const Main: React.FunctionComponent = () => (
   <Admin
     dataProvider={dataProvider}
-    dashboard={KeringDashbord}
+    dashboard={KeringDashboard}
     authProvider={authProvider}
   >
     {/*<Resource*/}
