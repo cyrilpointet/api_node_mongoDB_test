@@ -5,7 +5,7 @@ import cors from "cors";
 import { mongodb } from "./db/mongo";
 
 // Routes
-import { indexRouter } from "./routes/index";
+import { indexRouter } from "./routes";
 import { docRouter } from "./routes/docRouter";
 import { userRouter } from "./routes/userRouter";
 import { articleRouter } from "./routes/articleRouter";

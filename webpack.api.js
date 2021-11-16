@@ -2,7 +2,6 @@ const path = require("path");
 // this package handles all the external packages
 const nodeExternals = require("webpack-node-externals");
 // help running shell commands with webpack before and after the build process
-const WebpackShellPlugin = require("webpack-shell-plugin-next");
 // used to do the typechecking in a seperate process so the transpiling will be handled only by tsloader.
 // speed up compilation of code
 //const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
@@ -33,14 +32,6 @@ module.exports = {
   resolve: {
     extensions: [".js", ".ts"],
   },
-  plugins: [
-    //new ForkTsCheckerWebpackPlugin(),
-    new WebpackShellPlugin({
-      // when build ends run dev if the environment is development else run prod
-      onBuildEnd:
-        NODE_ENV === "development" ? ["yarn run:dev"] : ["yarn run:prod"],
-    }),
-  ],
   module: {
     rules: [
       {

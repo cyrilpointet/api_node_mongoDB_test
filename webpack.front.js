@@ -14,7 +14,7 @@ var config = {
   devtool: "source-map",
   target: "web",
   resolve: {
-    extensions: ["", ".js", ".jsx", ".ts", ".tsx"],
+    extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
   module: {
     rules: [
