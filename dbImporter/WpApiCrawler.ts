@@ -6,7 +6,6 @@ import bcryptjs from "bcryptjs";
 import { WpGroupManager } from "./WpGroupManager";
 import { CrawlerReporter } from "./CrawlerReporter";
 import { User } from "../server/models/User";
-import { seedAdmin } from "../seed/seedAdmin";
 
 export class WpApiCrawler {
   public static async populateDb(): Promise<void> {
@@ -26,7 +25,7 @@ export class WpApiCrawler {
       useFindAndModify: false,
     });
 
-    const admins = await User.find({});
+    const admins = await User.find();
     if (1 > admins.length) {
       const hash = await bcryptjs.hash("admin", 10);
       const user = new User({
@@ -40,8 +39,6 @@ export class WpApiCrawler {
 
     return new Promise(async (resolve, reject) => {
       try {
-        // Créer un admin par defaut si il n'y en a aucun en base
-        await seedAdmin();
         await this.start();
         await CrawlerReporter.printCompleteReport();
         await mongoose.disconnect();
@@ -83,6 +80,11 @@ export class WpApiCrawler {
         CrawlerReporter.printShortReport();
       } catch (e) {
         CrawlerReporter.apiErrors++;
+        if (500 !== e.response.status) {
+          reject(e);
+          return;
+        }
+        // Quand on a une 500, on ré-essaie avec une limite plus basse
         const limit = parseInt(url.searchParams.get("limit"));
         const newLimit = Math.floor(limit / 2);
         if (newLimit > 0) {

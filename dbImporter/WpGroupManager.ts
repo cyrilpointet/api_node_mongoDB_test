@@ -16,101 +16,71 @@ const GROUP_FIELDS = [
   "updated_time",
 ];
 
-// TODO => maj à 500 pour crawl toute l'api
-const GROUP_LIMIT = 10;
+const GROUP_LIMIT = 500;
 
 export class WpGroupManager {
-  private static pendingRequests: Promise<void>[] = [];
+  private static pendingMembers: Array<() => Promise<void>> = [];
+  private static pendingFeeds: Array<() => Promise<void>> = [];
 
-  public static importGroups(): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      const url = new URL(
-        process.env.KERING_OG_ID + "/groups",
-        process.env.OG_BASE_URL
-      );
-      url.searchParams.set("limit", GROUP_LIMIT.toString());
-      url.searchParams.set("fields", GROUP_FIELDS.join());
-      try {
-        const { data } = await WpApiCrawler.getDataFromApiUrl(url);
-        await this.manageApiData(data);
-        resolve();
-      } catch (e) {
-        reject(e);
-      }
-    });
+  public static async importGroups(): Promise<void> {
+    const url = new URL(
+      process.env.KERING_OG_ID + "/groups",
+      process.env.OG_BASE_URL
+    );
+    url.searchParams.set("limit", GROUP_LIMIT.toString());
+    url.searchParams.set("fields", GROUP_FIELDS.join());
+    const { data } = await WpApiCrawler.getDataFromApiUrl(url);
+    await this.manageApiData(data);
   }
 
-  private static manageApiData(
+  private static async manageApiData(
     ogResp: wpGroupRouteResponseType
   ): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      await this.iterateEntries(ogResp.data);
-
-      // TODO => maj condition pour crawl toute l'api
-      if (ogResp.paging?.next && ogResp.paging === "toto") {
-        try {
-          const formatedUrl = new URL(ogResp.paging.next);
-          formatedUrl.searchParams.set("limit", GROUP_LIMIT.toString());
-          const newResp = await WpApiCrawler.getDataFromApiUrl(formatedUrl);
-          await this.manageApiData(newResp.data);
-          resolve();
-        } catch (e) {
-          reject(e);
-        }
-      } else {
-        resolve();
-      }
-    });
-  }
-
-  private static iterateEntries(groups: wpGroupType[]): Promise<void> {
-    return new Promise(async (resolve) => {
-      for (let i = 0; i < groups.length; i++) {
-        try {
-          await this.upsertGroup(groups[i]);
-          CrawlerReporter.groups++;
-        } catch (e) {
-          CrawlerReporter.groupErrors++;
-        }
-        CrawlerReporter.printShortReport();
-      }
-      await Promise.all(this.pendingRequests);
-      this.pendingRequests = [];
-      resolve();
-    });
-  }
-
-  private static upsertGroup(rawGroup: wpGroupType): Promise<Group> {
-    return new Promise(async (resolve, reject) => {
+    for (let i = 0; i < ogResp.data.length; i++) {
       try {
-        const filter = { wpId: rawGroup.id };
-        const updatedValues = {
-          name: rawGroup.name,
-          description: rawGroup.description ? rawGroup.description : null,
-          privacy: rawGroup.privacy,
-          createdAt: rawGroup.created_time,
-          updatedAt: rawGroup.updated_time,
-          active: !rawGroup.archived,
-          wpId: rawGroup.id,
-        };
-        const updatedGroup = await Group.findOneAndUpdate(
-          filter,
-          updatedValues,
-          {
-            new: true,
-            upsert: true,
-          }
-        );
-        this.pendingRequests.push(
-          WpMemberManager.importMembersByGroup(updatedGroup)
-        );
-        this.pendingRequests.push(
-          WpFeedManager.importFeedsByGroup(updatedGroup)
-        );
-        resolve(updatedGroup);
+        await this.upsertGroup(ogResp.data[i]);
+        CrawlerReporter.groups++;
       } catch (e) {
-        reject(e);
+        CrawlerReporter.groupErrors++;
       }
+      CrawlerReporter.printShortReport();
+    }
+
+    if (ogResp.paging?.next) {
+      const formatedUrl = new URL(ogResp.paging.next);
+      formatedUrl.searchParams.set("limit", GROUP_LIMIT.toString());
+      const newResp = await WpApiCrawler.getDataFromApiUrl(formatedUrl);
+      await this.manageApiData(newResp.data);
+    } else {
+      await Promise.allSettled(this.pendingMembers.map((func) => func()));
+      console.log("done 1");
+      await Promise.allSettled(this.pendingFeeds.map((func) => func()));
+      console.log("done 2");
+      return;
+    }
+  }
+
+  private static async upsertGroup(rawGroup: wpGroupType): Promise<Group> {
+    const filter = { wpId: rawGroup.id };
+    const updatedValues = {
+      name: rawGroup.name,
+      description: rawGroup.description ? rawGroup.description : null,
+      privacy: rawGroup.privacy,
+      createdAt: rawGroup.created_time,
+      updatedAt: rawGroup.updated_time,
+      active: !rawGroup.archived,
+      wpId: rawGroup.id,
+    };
+    const updatedGroup = await Group.findOneAndUpdate(filter, updatedValues, {
+      new: true,
+      upsert: true,
     });
+    this.pendingMembers.push(() =>
+      WpMemberManager.importMembersByGroup(updatedGroup)
+    );
+    this.pendingFeeds.push(() =>
+      WpFeedManager.importFeedsByGroup(updatedGroup)
+    );
+    return updatedGroup;
   }
 }
