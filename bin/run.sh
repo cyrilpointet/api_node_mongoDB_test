@@ -4,9 +4,11 @@ docker-compose down
 
 ls -la .env
 
+docker-compose run --rm node yarn install
+docker-compose run --rm node yarn build-dev
+
 docker-compose up -d
 docker-compose config
-
 echo "
   _  __         _
  | |/ /        (_)

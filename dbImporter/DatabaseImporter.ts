@@ -1,5 +1,3 @@
-/* eslint-disable no-async-promise-executor */
-
 import { WpApiCrawler } from "./WpApiCrawler";
 
 WpApiCrawler.populateDb()
