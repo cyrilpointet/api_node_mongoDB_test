@@ -53,9 +53,7 @@ export class WpGroupManager {
       await this.manageApiData(newResp.data);
     } else {
       await Promise.allSettled(this.pendingMembers.map((func) => func()));
-      console.log("done 1");
       await Promise.allSettled(this.pendingFeeds.map((func) => func()));
-      console.log("done 2");
       return;
     }
   }

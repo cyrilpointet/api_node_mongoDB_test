@@ -15,6 +15,7 @@ type dbStateType = {
 export class CrawlerReporter {
   public static apiCalls = 0;
   public static apiErrors = 0;
+  public static apiErrors500 = 0;
   public static groups = 0;
   public static members = 0;
   public static feeds = 0;
@@ -50,7 +51,7 @@ export class CrawlerReporter {
       const dbState = await this.getDbState();
       console.log("****** Terminated ******");
       console.log(
-        `Passed \x1b[32m${this.apiCalls}\x1b[0m calls with \x1b[31m${this.apiErrors}\x1b[0m errorsdocker ps`
+        `Passed \x1b[32m${this.apiCalls}\x1b[0m calls with \x1b[31m${this.apiErrors}\x1b[0m errors with \x1b[31m${this.apiErrors500}\x1b[0m errors 500`
       );
       console.log("Entries updated:");
       console.log(

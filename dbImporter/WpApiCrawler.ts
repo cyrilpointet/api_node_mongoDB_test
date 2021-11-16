@@ -25,6 +25,7 @@ export class WpApiCrawler {
       useFindAndModify: false,
     });
 
+    // Si il n'y a pas d'admin en db, on en créer un par défaut
     const admins = await User.find();
     if (1 > admins.length) {
       const hash = await bcryptjs.hash("admin", 10);
@@ -39,7 +40,7 @@ export class WpApiCrawler {
 
     return new Promise(async (resolve, reject) => {
       try {
-        await this.start();
+        await WpGroupManager.importGroups();
         await CrawlerReporter.printCompleteReport();
         await mongoose.disconnect();
         resolve();
@@ -48,19 +49,6 @@ export class WpApiCrawler {
         await mongoose.disconnect();
         reject(e);
       }
-    });
-  }
-
-  public static start(): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await WpGroupManager.importGroups();
-      } catch (e) {
-        console.log(e);
-        reject(e);
-        return;
-      }
-      resolve();
     });
   }
 
@@ -85,6 +73,7 @@ export class WpApiCrawler {
           return;
         }
         // Quand on a une 500, on ré-essaie avec une limite plus basse
+        CrawlerReporter.apiErrors500++;
         const limit = parseInt(url.searchParams.get("limit"));
         const newLimit = Math.floor(limit / 2);
         if (newLimit > 0) {
