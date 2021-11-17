@@ -96,3 +96,8 @@ export type wpCommentType = {
   };
   created_time: string;
 };
+
+export type entityIdsType = {
+  id: string;
+  wpId: string;
+};

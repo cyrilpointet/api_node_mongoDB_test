@@ -1,10 +1,11 @@
-/* eslint-disable no-async-promise-executor */
-
-import { WpApiCrawler } from "./WpApiCrawler";
-import { Member } from "../server/models/Member";
-import { wpMemberRouteResponseType, wpMemberType } from "./wpApiTypes";
-import { Group } from "../server/models/Group";
-import { CrawlerReporter } from "./CrawlerReporter";
+import { WpApiCrawler } from "../WpApiCrawler";
+import { Member } from "../../server/models/Member";
+import {
+  entityIdsType,
+  wpMemberRouteResponseType,
+  wpMemberType,
+} from "../wpApiTypes";
+import { CrawlerReporter } from "../CrawlerReporter";
 
 export const MEMBER_LIMIT = 500;
 export const MEMBER_FIElDS = [
@@ -18,7 +19,9 @@ export const MEMBER_FIElDS = [
 ];
 
 export class WpMemberManager {
-  public static async importMembersByGroup(group: Group): Promise<void> {
+  public static async importMembersByGroup(
+    group: entityIdsType
+  ): Promise<void> {
     const url = new URL(group.wpId + "/members", process.env.OG_BASE_URL);
     url.searchParams.set("limit", MEMBER_LIMIT.toString());
     url.searchParams.set("fields", MEMBER_FIElDS.join());
@@ -32,15 +35,13 @@ export class WpMemberManager {
   ): Promise<void> {
     for (let i = 0; i < ogResp.data.length; i++) {
       try {
-        const member = await this.upsertMember(ogResp.data[i]);
-        member.groups.push(groupId);
-        await member.save();
+        await this.upsertMember(ogResp.data[i], groupId);
         CrawlerReporter.members++;
       } catch (e) {
         CrawlerReporter.memberErrors++;
       }
-      CrawlerReporter.printShortReport();
     }
+    CrawlerReporter.printShortReport();
 
     if (ogResp.paging?.next) {
       const formatedUrl = new URL(ogResp.paging.next);
@@ -50,15 +51,34 @@ export class WpMemberManager {
     }
   }
 
-  public static async importMemberFromId(id: string): Promise<Member> {
-    const url = new URL(id, process.env.OG_BASE_URL);
-    url.searchParams.set("fields", MEMBER_FIElDS.join());
-    const { data } = await WpApiCrawler.getDataFromApiUrl(url);
-    const member = await this.upsertMember(data);
-    return member;
+  public static async getOrImportMemberIdFromWpId(
+    wpId: string
+  ): Promise<string | null> {
+    let memberId: string | null = null;
+    const member = await Member.findOne({ wpId });
+
+    // Si le membre est inconnu, on essaie de l'importer
+    if (!member) {
+      const url = new URL(wpId, process.env.OG_BASE_URL);
+      url.searchParams.set("fields", MEMBER_FIElDS.join());
+      try {
+        const { data } = await WpApiCrawler.getDataFromApiUrl(url);
+        const memberIds = await this.upsertMember(data);
+        memberId = memberIds.id;
+        CrawlerReporter.members++;
+      } catch {
+        CrawlerReporter.memberErrors++;
+      }
+    } else {
+      memberId = member._id;
+    }
+    return memberId;
   }
 
-  private static async upsertMember(rawMember: wpMemberType): Promise<Member> {
+  private static async upsertMember(
+    rawMember: wpMemberType,
+    groupId: string | null = null
+  ): Promise<entityIdsType> {
     const filter = { wpId: rawMember.id };
     const updatedValues = {
       name: rawMember.name,
@@ -76,6 +96,10 @@ export class WpMemberManager {
       new: true,
       upsert: true,
     });
-    return updatedMember;
+    if (groupId) {
+      updatedMember.groups.push(groupId);
+      await updatedMember.save();
+    }
+    return { id: updatedMember._id, wpId: updatedMember.wpId };
   }
 }

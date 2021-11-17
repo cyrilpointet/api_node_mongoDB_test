@@ -1,9 +1,7 @@
-/* eslint-disable no-async-promise-executor */
-
 import axios from "axios";
 import mongoose from "mongoose";
 import bcryptjs from "bcryptjs";
-import { WpGroupManager } from "./WpGroupManager";
+import { pendingPromisesType, WpGroupManager } from "./managers/WpGroupManager";
 import { CrawlerReporter } from "./CrawlerReporter";
 import { User } from "../server/models/User";
 
@@ -38,53 +36,54 @@ export class WpApiCrawler {
       await user.save();
     }
 
-    return new Promise(async (resolve, reject) => {
-      try {
+    try {
+      // Importe les groupes
+      const pendingPromises: pendingPromisesType =
         await WpGroupManager.importGroups();
-        await CrawlerReporter.printCompleteReport();
-        await mongoose.disconnect();
-        resolve();
-      } catch (e) {
-        await CrawlerReporter.printCompleteReport();
-        await mongoose.disconnect();
-        reject(e);
-      }
-    });
+      // Importe les membres
+      await Promise.allSettled(
+        pendingPromises.pendingMembers.map((func) => func())
+      );
+      // Importe les feeds et comments
+      await Promise.allSettled(
+        pendingPromises.pendingFeeds.map((func) => func())
+      );
+    } finally {
+      await CrawlerReporter.printCompleteReport();
+      await mongoose.disconnect();
+    }
   }
 
   // On met un any pour accepter tous les types de réponses de l'api wp
-  public static getDataFromApiUrl(url: URL): Promise<any> { // eslint-disable-line
+  public static async getDataFromApiUrl(url: URL): Promise<any> { // eslint-disable-line
     const headers = {
       "Content-Type": "application/json",
       Authorization: "Bearer " + process.env.KERING_APP_TOKEN,
     };
-    return new Promise(async (resolve, reject) => {
-      try {
-        CrawlerReporter.apiCalls++;
-        const resp = await axios.get(url.toString(), {
-          headers,
-        });
-        resolve(resp);
-        CrawlerReporter.printShortReport();
-      } catch (e) {
-        CrawlerReporter.apiErrors++;
-        if (500 !== e.response?.status) {
-          reject(e);
-          return;
-        }
-        // Quand on a une 500, on ré-essaie avec une limite plus basse
-        CrawlerReporter.apiErrors500++;
-        const limit = parseInt(url.searchParams.get("limit"));
-        const newLimit = Math.floor(limit / 2);
-        if (newLimit > 0) {
-          url.searchParams.set("limit", newLimit.toString());
-          const limitedResp = await this.getDataFromApiUrl(url);
-          resolve(limitedResp);
-        } else {
-          reject(e);
-          CrawlerReporter.printShortReport();
-        }
+    try {
+      CrawlerReporter.apiCalls++;
+      const resp = await axios.get(url.toString(), {
+        headers,
+      });
+      CrawlerReporter.printShortReport();
+      return resp;
+    } catch (e) {
+      CrawlerReporter.apiErrors++;
+      if (500 !== e.response?.status) {
+        throw e;
       }
-    });
+      // Quand on a une 500, on ré-essaie avec une limite plus basse
+      CrawlerReporter.apiErrors500++;
+      const limit = parseInt(url.searchParams.get("limit"));
+      const newLimit = Math.floor(limit / 2);
+      if (newLimit > 0) {
+        url.searchParams.set("limit", newLimit.toString());
+        const limitedResp = await this.getDataFromApiUrl(url);
+        return limitedResp;
+      } else {
+        CrawlerReporter.printShortReport();
+        throw e;
+      }
+    }
   }
 }

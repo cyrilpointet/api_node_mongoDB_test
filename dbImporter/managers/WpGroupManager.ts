@@ -1,11 +1,14 @@
-/* eslint-disable no-async-promise-executor */
-
-import { Group } from "../server/models/Group";
-import { WpApiCrawler } from "./WpApiCrawler";
-import { wpGroupRouteResponseType, wpGroupType } from "./wpApiTypes";
+import { Group } from "../../server/models/Group";
+import { WpApiCrawler } from "../WpApiCrawler";
+import { wpGroupRouteResponseType, wpGroupType } from "../wpApiTypes";
 import { WpMemberManager } from "./WpMemberManager";
 import { WpFeedManager } from "./WpFeedManager";
-import { CrawlerReporter } from "./CrawlerReporter";
+import { CrawlerReporter } from "../CrawlerReporter";
+
+export type pendingPromisesType = {
+  pendingMembers: Array<() => Promise<void>>;
+  pendingFeeds: Array<() => Promise<void>>;
+};
 
 const GROUP_FIELDS = [
   "name",
@@ -22,7 +25,7 @@ export class WpGroupManager {
   private static pendingMembers: Array<() => Promise<void>> = [];
   private static pendingFeeds: Array<() => Promise<void>> = [];
 
-  public static async importGroups(): Promise<void> {
+  public static async importGroups(): Promise<pendingPromisesType> {
     const url = new URL(
       process.env.KERING_OG_ID + "/groups",
       process.env.OG_BASE_URL
@@ -31,6 +34,10 @@ export class WpGroupManager {
     url.searchParams.set("fields", GROUP_FIELDS.join());
     const { data } = await WpApiCrawler.getDataFromApiUrl(url);
     await this.manageApiData(data);
+    return {
+      pendingMembers: this.pendingMembers,
+      pendingFeeds: this.pendingFeeds,
+    };
   }
 
   private static async manageApiData(
@@ -46,19 +53,17 @@ export class WpGroupManager {
       CrawlerReporter.printShortReport();
     }
 
-    if (ogResp.paging?.next) {
+    if (ogResp.paging?.next && ogResp) {
       const formatedUrl = new URL(ogResp.paging.next);
       formatedUrl.searchParams.set("limit", GROUP_LIMIT.toString());
       const newResp = await WpApiCrawler.getDataFromApiUrl(formatedUrl);
       await this.manageApiData(newResp.data);
     } else {
-      await Promise.allSettled(this.pendingMembers.map((func) => func()));
-      await Promise.allSettled(this.pendingFeeds.map((func) => func()));
       return;
     }
   }
 
-  private static async upsertGroup(rawGroup: wpGroupType): Promise<Group> {
+  private static async upsertGroup(rawGroup: wpGroupType): Promise<void> {
     const filter = { wpId: rawGroup.id };
     const updatedValues = {
       name: rawGroup.name,
@@ -74,11 +79,17 @@ export class WpGroupManager {
       upsert: true,
     });
     this.pendingMembers.push(() =>
-      WpMemberManager.importMembersByGroup(updatedGroup)
+      WpMemberManager.importMembersByGroup({
+        id: updatedGroup._id,
+        wpId: updatedGroup.wpId,
+      })
     );
     this.pendingFeeds.push(() =>
-      WpFeedManager.importFeedsByGroup(updatedGroup)
+      WpFeedManager.importFeedsByGroup({
+        id: updatedGroup._id,
+        wpId: updatedGroup.wpId,
+      })
     );
-    return updatedGroup;
+    return;
   }
 }
