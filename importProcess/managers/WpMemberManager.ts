@@ -19,6 +19,11 @@ export const MEMBER_FIElDS = [
 ];
 
 export class WpMemberManager {
+  public static async detachMembersFromGroups(): Promise<void> {
+    await Member.updateMany({}, { groups: [] });
+    return;
+  }
+
   public static async importMembersByGroup(
     group: entityIdsType
   ): Promise<void> {

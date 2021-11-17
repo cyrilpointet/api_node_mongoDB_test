@@ -53,7 +53,7 @@ export class WpGroupManager {
       CrawlerReporter.printShortReport();
     }
 
-    if (ogResp.paging?.next && ogResp) {
+    if (ogResp.paging?.next) {
       const formatedUrl = new URL(ogResp.paging.next);
       formatedUrl.searchParams.set("limit", GROUP_LIMIT.toString());
       const newResp = await WpApiCrawler.getDataFromApiUrl(formatedUrl);

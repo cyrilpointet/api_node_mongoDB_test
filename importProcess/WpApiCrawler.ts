@@ -4,6 +4,8 @@ import bcryptjs from "bcryptjs";
 import { pendingPromisesType, WpGroupManager } from "./managers/WpGroupManager";
 import { CrawlerReporter } from "./CrawlerReporter";
 import { User } from "../server/models/User";
+import { WpMemberManager } from "./managers/WpMemberManager";
+import { WpFeedManager } from "./managers/WpFeedManager";
 
 export class WpApiCrawler {
   public static async populateDb(): Promise<void> {
@@ -37,21 +39,34 @@ export class WpApiCrawler {
     }
 
     try {
-      // Importe les groupes
+      // Importe et update les groupes
       const pendingPromises: pendingPromisesType =
         await WpGroupManager.importGroups();
-      // Importe les membres
+
+      // Détache les membres existants des groupes pour ne pas conserver
+      // de liaison vers des groupes qui n'existeraient plus
+      await WpMemberManager.detachMembersFromGroups();
+
+      // Importe et update les membres
       await Promise.allSettled(
         pendingPromises.pendingMembers.map((func) => func())
       );
-      // Importe les feeds et comments
+
+      // Détache les feeds et comments existants des groupes et membres pour ne pas conserver
+      // de liaison vers des groupes ou membres qui n'existeraient plus
+      await WpFeedManager.detachFeedsAndCommentsFromGroupsAndMembers();
+
+      // Importe et update les feeds et comments
       await Promise.allSettled(
         pendingPromises.pendingFeeds.map((func) => func())
       );
+
+      // TODO => supprimer les orphelins ? (groupes sans membres, feed sans groupe,...)
     } finally {
       await CrawlerReporter.printCompleteReport();
       await mongoose.disconnect();
     }
+    return;
   }
 
   // On met un any pour accepter tous les types de réponses de l'api wp

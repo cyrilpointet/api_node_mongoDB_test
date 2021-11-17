@@ -7,6 +7,11 @@ import { CrawlerReporter } from "../CrawlerReporter";
 const API_LIMIT = 500;
 
 export class WpCommentManager {
+  public static async detachCommentsFromMembersAndFeed(): Promise<void> {
+    await Comment.updateMany({}, { feed: null, author: null });
+    return;
+  }
+
   public static async manageApiData(
     ogResp: wpCommentRouteResponseType,
     feedId: string

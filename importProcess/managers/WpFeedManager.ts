@@ -26,6 +26,12 @@ const FEED_FIElDS = [
 ];
 
 export class WpFeedManager {
+  public static async detachFeedsAndCommentsFromGroupsAndMembers(): Promise<void> {
+    await Feed.updateMany({}, { group: null, author: null });
+    await WpCommentManager.detachCommentsFromMembersAndFeed();
+    return;
+  }
+
   public static async importFeedsByGroup(group: entityIdsType): Promise<void> {
     const url = new URL(group.wpId + "/feed", process.env.OG_BASE_URL);
     url.searchParams.set("limit", FEED_LIMIT.toString());
