@@ -14,6 +14,7 @@ type dbStateType = {
 
 export class CrawlerReporter {
   public static apiCalls = 0;
+  public static pendingApiCalls = 0;
   public static apiErrors = 0;
   public static apiErrors500 = 0;
   public static groups = 0;
@@ -42,8 +43,9 @@ export class CrawlerReporter {
 
   public static printShortReport(): void {
     process.stdout.write(
-      `\rApi calls: \x1b[32m${this.apiCalls}\x1b[0m - \x1b[31m${this.apiErrors}\x1b[0m, groups: \x1b[32m${this.groups}\x1b[0m - \x1b[31m${this.groupErrors}\x1b[0m, members: \x1b[32m${this.members}\x1b[0m - \x1b[31m${this.memberErrors}\x1b[0m, feeds: \x1b[32m${this.feeds}\x1b[0m - \x1b[31m${this.feedErrors}\x1b[0m, comments: \x1b[32m${this.comments}\x1b[0m - \x1b[31m${this.commentErrors}\x1b[0m`
+      `\rApi calls: \x1b[32m${this.apiCalls}\x1b[0m - \x1b[33m${this.pendingApiCalls}\x1b[0m - \x1b[31m${this.apiErrors}\x1b[0m, groups: \x1b[32m${this.groups}\x1b[0m - \x1b[31m${this.groupErrors}\x1b[0m, members: \x1b[32m${this.members}\x1b[0m - \x1b[31m${this.memberErrors}\x1b[0m, feeds: \x1b[32m${this.feeds}\x1b[0m - \x1b[31m${this.feedErrors}\x1b[0m, comments: \x1b[32m${this.comments}\x1b[0m - \x1b[31m${this.commentErrors}\x1b[0m`
     );
+    return;
   }
 
   public static printCompleteReport(): Promise<void> {

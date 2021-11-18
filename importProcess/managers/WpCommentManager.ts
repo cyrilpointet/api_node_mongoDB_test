@@ -7,6 +7,8 @@ import { CrawlerReporter } from "../CrawlerReporter";
 const API_LIMIT = 500;
 
 export class WpCommentManager {
+  // Détache les comments existants des feeds et membres pour ne pas conserver
+  // de liaison vers des feeds ou membres qui n'existeraient plus
   public static async detachCommentsFromMembersAndFeed(): Promise<void> {
     await Comment.updateMany({}, { feed: null, author: null });
     return;

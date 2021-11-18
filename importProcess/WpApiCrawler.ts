@@ -1,7 +1,7 @@
 import axios from "axios";
 import mongoose from "mongoose";
 import bcryptjs from "bcryptjs";
-import { pendingPromisesType, WpGroupManager } from "./managers/WpGroupManager";
+import { WpGroupManager } from "./managers/WpGroupManager";
 import { CrawlerReporter } from "./CrawlerReporter";
 import { User } from "../server/models/User";
 import { WpMemberManager } from "./managers/WpMemberManager";
@@ -39,27 +39,16 @@ export class WpApiCrawler {
     }
 
     try {
-      // Importe et update les groupes
-      const pendingPromises: pendingPromisesType =
-        await WpGroupManager.importGroups();
-
       // Détache les membres existants des groupes pour ne pas conserver
       // de liaison vers des groupes qui n'existeraient plus
       await WpMemberManager.detachMembersFromGroups();
-
-      // Importe et update les membres
-      await Promise.allSettled(
-        pendingPromises.pendingMembers.map((func) => func())
-      );
 
       // Détache les feeds et comments existants des groupes et membres pour ne pas conserver
       // de liaison vers des groupes ou membres qui n'existeraient plus
       await WpFeedManager.detachFeedsAndCommentsFromGroupsAndMembers();
 
-      // Importe et update les feeds et comments
-      await Promise.allSettled(
-        pendingPromises.pendingFeeds.map((func) => func())
-      );
+      // Importe et update les groupes, et les membres et feeds et comments de chaque groupe
+      await WpGroupManager.importGroups();
 
       // TODO => supprimer les orphelins ? (groupes sans membres, feed sans groupe,...)
     } finally {
@@ -77,17 +66,21 @@ export class WpApiCrawler {
     };
     try {
       CrawlerReporter.apiCalls++;
+      CrawlerReporter.pendingApiCalls++;
       const resp = await axios.get(url.toString(), {
         headers,
+        timeout: 30000,
       });
+      CrawlerReporter.pendingApiCalls--;
       CrawlerReporter.printShortReport();
       return resp;
     } catch (e) {
+      CrawlerReporter.pendingApiCalls--;
       CrawlerReporter.apiErrors++;
-      if (500 !== e.response?.status) {
+      if (!url.searchParams.get("limit")) {
         throw e;
       }
-      // Quand on a une 500, on ré-essaie avec une limite plus basse
+      // On ré-essaie avec une limite plus basse
       CrawlerReporter.apiErrors500++;
       const limit = parseInt(url.searchParams.get("limit"));
       const newLimit = Math.floor(limit / 2);

@@ -26,6 +26,8 @@ const FEED_FIElDS = [
 ];
 
 export class WpFeedManager {
+  // Détache les feeds et comments existants des groupes et membres pour ne pas conserver
+  // de liaison vers des groupes ou membres qui n'existeraient plus
   public static async detachFeedsAndCommentsFromGroupsAndMembers(): Promise<void> {
     await Feed.updateMany({}, { group: null, author: null });
     await WpCommentManager.detachCommentsFromMembersAndFeed();

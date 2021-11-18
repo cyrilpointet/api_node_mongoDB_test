@@ -19,6 +19,8 @@ export const MEMBER_FIElDS = [
 ];
 
 export class WpMemberManager {
+  // Détache les membres existants des groupes pour ne pas conserver
+  // de liaison vers des groupes qui n'existeraient plus
   public static async detachMembersFromGroups(): Promise<void> {
     await Member.updateMany({}, { groups: [] });
     return;
