@@ -65,7 +65,7 @@ export const userCtrl: userCtrlType = {
     try {
       const totalItemsCount = await User.find(
         QueryHelper.getQueryFilters(req)
-      ).count();
+      ).estimatedDocumentCount();
       const users = await User.find(QueryHelper.getQueryFilters(req))
         .sort(QueryHelper.getQuerySort(req))
         .limit(QueryHelper.getQueryLimit(req))

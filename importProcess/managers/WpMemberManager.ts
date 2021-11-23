@@ -34,6 +34,7 @@ export class WpMemberManager {
     url.searchParams.set("fields", MEMBER_FIElDS.join());
     const { data } = await WpApiCrawler.getDataFromApiUrl(url);
     await this.manageApiData(data, group.id);
+    return;
   }
 
   private static async manageApiData(

@@ -5,6 +5,11 @@ import { WpMemberManager } from "./WpMemberManager";
 import { WpFeedManager } from "./WpFeedManager";
 import { CrawlerReporter } from "../CrawlerReporter";
 
+export type pendingPromisesType = {
+  pendingMembers: Array<() => Promise<void>>;
+  pendingFeeds: Array<() => Promise<void>>;
+};
+
 const GROUP_FIELDS = [
   "name",
   "description",
@@ -14,13 +19,13 @@ const GROUP_FIELDS = [
   "updated_time",
 ];
 
-const GROUP_LIMIT = 500;
+const GROUP_LIMIT = 200;
 
 export class WpGroupManager {
   private static pendingMembers: Array<() => Promise<void>> = [];
   private static pendingFeeds: Array<() => Promise<void>> = [];
 
-  public static async importGroups(): Promise<void> {
+  public static async importGroups(): Promise<pendingPromisesType> {
     const url = new URL(
       process.env.KERING_OG_ID + "/groups",
       process.env.OG_BASE_URL
@@ -29,7 +34,10 @@ export class WpGroupManager {
     url.searchParams.set("fields", GROUP_FIELDS.join());
     const { data } = await WpApiCrawler.getDataFromApiUrl(url);
     await this.manageApiData(data);
-    return;
+    return {
+      pendingMembers: this.pendingMembers,
+      pendingFeeds: this.pendingFeeds,
+    };
   }
 
   private static async manageApiData(
@@ -44,11 +52,6 @@ export class WpGroupManager {
       }
       CrawlerReporter.printShortReport();
     }
-
-    await Promise.allSettled(this.pendingMembers.map((func) => func()));
-    await Promise.allSettled(this.pendingFeeds.map((func) => func()));
-    this.pendingMembers = [];
-    this.pendingFeeds = [];
 
     if (ogResp.paging?.next) {
       const formatedUrl = new URL(ogResp.paging.next);

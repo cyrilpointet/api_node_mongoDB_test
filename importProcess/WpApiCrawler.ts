@@ -1,13 +1,19 @@
 import axios from "axios";
 import mongoose from "mongoose";
 import bcryptjs from "bcryptjs";
-import { WpGroupManager } from "./managers/WpGroupManager";
+import Bottleneck from "bottleneck";
+import { pendingPromisesType, WpGroupManager } from "./managers/WpGroupManager";
 import { CrawlerReporter } from "./CrawlerReporter";
 import { User } from "../server/models/User";
 import { WpMemberManager } from "./managers/WpMemberManager";
 import { WpFeedManager } from "./managers/WpFeedManager";
 
 export class WpApiCrawler {
+  private static limiter = new Bottleneck({
+    maxConcurrent: 100,
+    minTime: 250,
+  });
+
   public static async populateDb(): Promise<void> {
     console.log(`
   _  __        _                _      _          _                     _           
@@ -39,15 +45,29 @@ export class WpApiCrawler {
     }
 
     try {
+      // Importe et update les groupes
+      const pendingPromises: pendingPromisesType =
+        await WpGroupManager.importGroups();
+
       // Détache les membres existants des groupes pour ne pas conserver
       // de liaison vers des groupes qui n'existeraient plus
       await WpMemberManager.detachMembersFromGroups();
+
+      // Importe et update les membres
+      await Promise.allSettled(
+        pendingPromises.pendingMembers.map((func) => func())
+      );
 
       // Détache les feeds et comments existants des groupes et membres pour ne pas conserver
       // de liaison vers des groupes ou membres qui n'existeraient plus
       await WpFeedManager.detachFeedsAndCommentsFromGroupsAndMembers();
 
-      // Importe et update les groupes, et les membres et feeds et comments de chaque groupe
+      // Importe et update les feeds et comments
+      await Promise.allSettled(
+        pendingPromises.pendingFeeds.map((func) => func())
+      );
+
+      // Importe et update les groupes, puis les membres et feeds et comments de chaque groupe
       await WpGroupManager.importGroups();
 
       // TODO => supprimer les orphelins ? (groupes sans membres, feed sans groupe,...)
@@ -65,11 +85,13 @@ export class WpApiCrawler {
       Authorization: "Bearer " + process.env.KERING_APP_TOKEN,
     };
     try {
-      CrawlerReporter.apiCalls++;
-      CrawlerReporter.pendingApiCalls++;
-      const resp = await axios.get(url.toString(), {
-        headers,
-        timeout: 30000,
+      const resp = await this.limiter.schedule(() => {
+        CrawlerReporter.apiCalls++;
+        CrawlerReporter.pendingApiCalls++;
+        return axios.get(url.toString(), {
+          headers,
+          timeout: 30000,
+        });
       });
       CrawlerReporter.pendingApiCalls--;
       CrawlerReporter.printShortReport();

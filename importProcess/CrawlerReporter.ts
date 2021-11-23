@@ -28,10 +28,10 @@ export class CrawlerReporter {
 
   private static getDbState(): Promise<dbStateType> {
     return new Promise(async (resolve) => {
-      const groups = await Group.find({}).count();
-      const members = await Member.find({}).count();
-      const feeds = await Feed.find({}).count();
-      const comments = await Comment.find({}).count();
+      const groups = await Group.find({}).countDocuments();
+      const members = await Member.find({}).countDocuments();
+      const feeds = await Feed.find({}).countDocuments();
+      const comments = await Comment.find({}).countDocuments();
       resolve({
         groups,
         members,
