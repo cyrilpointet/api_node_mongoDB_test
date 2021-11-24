@@ -38,7 +38,7 @@ export const articlesCtrl: articlesCtrlType = {
     try {
       const totalItemsCount = await Article.find(
         QueryHelper.getQueryFilters(req)
-      ).count();
+      ).estimatedDocumentCount();
       const products = await Article.find(QueryHelper.getQueryFilters(req))
         .sort(QueryHelper.getQuerySort(req))
         .limit(QueryHelper.getQueryLimit(req))

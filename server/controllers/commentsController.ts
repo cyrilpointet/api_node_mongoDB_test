@@ -18,7 +18,7 @@ export const commentsController: feedsCtrlType = {
     try {
       const totalItemsCount = await Comment.find(
         QueryHelper.getQueryFilters(req)
-      ).count();
+      ).estimatedDocumentCount();
       const comments = await Comment.find(QueryHelper.getQueryFilters(req))
         .sort(QueryHelper.getQuerySort(req))
         .limit(QueryHelper.getQueryLimit(req))

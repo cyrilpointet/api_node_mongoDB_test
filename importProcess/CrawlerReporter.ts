@@ -14,7 +14,9 @@ type dbStateType = {
 
 export class CrawlerReporter {
   public static apiCalls = 0;
+  public static pendingApiCalls = 0;
   public static apiErrors = 0;
+  public static apiErrors500 = 0;
   public static groups = 0;
   public static members = 0;
   public static feeds = 0;
@@ -26,10 +28,10 @@ export class CrawlerReporter {
 
   private static getDbState(): Promise<dbStateType> {
     return new Promise(async (resolve) => {
-      const groups = await Group.find({}).count();
-      const members = await Member.find({}).count();
-      const feeds = await Feed.find({}).count();
-      const comments = await Comment.find({}).count();
+      const groups = await Group.find({}).countDocuments();
+      const members = await Member.find({}).countDocuments();
+      const feeds = await Feed.find({}).countDocuments();
+      const comments = await Comment.find({}).countDocuments();
       resolve({
         groups,
         members,
@@ -41,8 +43,9 @@ export class CrawlerReporter {
 
   public static printShortReport(): void {
     process.stdout.write(
-      `\rApi calls: \x1b[32m${this.apiCalls}\x1b[0m - \x1b[31m${this.apiErrors}\x1b[0m, groups: \x1b[32m${this.groups}\x1b[0m - \x1b[31m${this.groupErrors}\x1b[0m, members: \x1b[32m${this.members}\x1b[0m - \x1b[31m${this.memberErrors}\x1b[0m, feeds: \x1b[32m${this.feeds}\x1b[0m - \x1b[31m${this.feedErrors}\x1b[0m, comments: \x1b[32m${this.comments}\x1b[0m - \x1b[31m${this.commentErrors}\x1b[0m`
+      `\rApi calls: \x1b[32m${this.apiCalls}\x1b[0m - \x1b[33m${this.pendingApiCalls}\x1b[0m - \x1b[31m${this.apiErrors}\x1b[0m, groups: \x1b[32m${this.groups}\x1b[0m - \x1b[31m${this.groupErrors}\x1b[0m, members: \x1b[32m${this.members}\x1b[0m - \x1b[31m${this.memberErrors}\x1b[0m, feeds: \x1b[32m${this.feeds}\x1b[0m - \x1b[31m${this.feedErrors}\x1b[0m, comments: \x1b[32m${this.comments}\x1b[0m - \x1b[31m${this.commentErrors}\x1b[0m`
     );
+    return;
   }
 
   public static printCompleteReport(): Promise<void> {
@@ -50,7 +53,7 @@ export class CrawlerReporter {
       const dbState = await this.getDbState();
       console.log("****** Terminated ******");
       console.log(
-        `Passed \x1b[32m${this.apiCalls}\x1b[0m calls with \x1b[31m${this.apiErrors}\x1b[0m errorsdocker ps`
+        `Passed \x1b[32m${this.apiCalls}\x1b[0m calls with \x1b[31m${this.apiErrors}\x1b[0m errors with \x1b[31m${this.apiErrors500}\x1b[0m errors 500`
       );
       console.log("Entries updated:");
       console.log(

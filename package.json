@@ -5,12 +5,13 @@
   "scripts": {
     "watch": "webpack --config webpack.config.js --watch",
     "build-dev": "webpack --config webpack.config.js",
-    "import-database": "node ./build/databaseImporter.bundle.js",
+    "import-database": "node ./build/importProcess.bundle.js",
     "start": "./node_modules/.bin/pm2 start startup.json --name API --no-daemon"
   },
   "dependencies": {
     "axios": "^0.21.0",
     "bcryptjs": "^2.4.3",
+    "bottleneck": "^2.19.5",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",

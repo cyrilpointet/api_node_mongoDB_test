@@ -16,7 +16,7 @@ export const feedsController: feedsCtrlType = {
     try {
       const totalItemsCount = await Feed.find(
         QueryHelper.getQueryFilters(req)
-      ).count();
+      ).estimatedDocumentCount();
       const feeds = await Feed.find(QueryHelper.getQueryFilters(req))
         .sort(QueryHelper.getQuerySort(req))
         .limit(QueryHelper.getQueryLimit(req))

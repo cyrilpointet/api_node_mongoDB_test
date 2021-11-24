@@ -12,7 +12,7 @@ module.exports = {
   // our entry server file
   entry: {
     main: "./server/www.js",
-    databaseImporter: "./dbImporter/DatabaseImporter.ts",
+    importProcess: "./importProcess/importProcess.ts",
   },
   // should be here so webpack knows that it handles node packages
   target: "node",

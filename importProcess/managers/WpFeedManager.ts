@@ -1,13 +1,13 @@
-/* eslint-disable no-async-promise-executor */
-
-import { Feed } from "../server/models/Feed";
-import { Member } from "../server/models/Member";
-import { Group } from "../server/models/Group";
-import { wpFeedRouteResponseType, wpFeedType } from "./wpApiTypes";
-import { WpApiCrawler } from "./WpApiCrawler";
+import { Feed } from "../../server/models/Feed";
+import {
+  entityIdsType,
+  wpFeedRouteResponseType,
+  wpFeedType,
+} from "../wpApiTypes";
+import { WpApiCrawler } from "../WpApiCrawler";
 import { WpCommentManager } from "./WpCommentManager";
 import { WpMemberManager } from "./WpMemberManager";
-import { CrawlerReporter } from "./CrawlerReporter";
+import { CrawlerReporter } from "../CrawlerReporter";
 
 const FEED_LIMIT = 500;
 
@@ -26,7 +26,15 @@ const FEED_FIElDS = [
 ];
 
 export class WpFeedManager {
-  public static async importFeedsByGroup(group: Group): Promise<void> {
+  // Détache les feeds et comments existants des groupes et membres pour ne pas conserver
+  // de liaison vers des groupes ou membres qui n'existeraient plus
+  public static async detachFeedsAndCommentsFromGroupsAndMembers(): Promise<void> {
+    await Feed.updateMany({}, { group: null, author: null });
+    await WpCommentManager.detachCommentsFromMembersAndFeed();
+    return;
+  }
+
+  public static async importFeedsByGroup(group: entityIdsType): Promise<void> {
     const url = new URL(group.wpId + "/feed", process.env.OG_BASE_URL);
     url.searchParams.set("limit", FEED_LIMIT.toString());
     url.searchParams.set("fields", FEED_FIElDS.join());
@@ -45,8 +53,8 @@ export class WpFeedManager {
       } catch (e) {
         CrawlerReporter.feedErrors++;
       }
-      CrawlerReporter.printShortReport();
     }
+    CrawlerReporter.printShortReport();
 
     if (wpResp.paging?.next && wpResp.paging?.cursors) {
       const formatedUrl = new URL(wpResp.paging.next);
@@ -59,20 +67,11 @@ export class WpFeedManager {
   private static async upsertFeed(
     rawFeed: wpFeedType,
     groupId: string
-  ): Promise<Feed> {
+  ): Promise<void> {
     const filter = { wpId: rawFeed.id };
-    let author = await Member.findOne({ wpId: rawFeed.from.id });
-
-    // Si le membre est inconnu, on essaie de l'importer
-    if (!author) {
-      try {
-        author = await WpMemberManager.importMemberFromId(rawFeed.from.id);
-        CrawlerReporter.members++;
-      } catch {
-        author = null;
-        CrawlerReporter.memberErrors++;
-      }
-    }
+    const authorId = await WpMemberManager.getOrImportMemberIdFromWpId(
+      rawFeed.from.id
+    );
 
     const updatedValues = {
       type: rawFeed.type,
@@ -82,7 +81,7 @@ export class WpFeedManager {
       createdAt: rawFeed.created_time,
       updatedAt: rawFeed.updated_time,
       wpId: rawFeed.id,
-      author: author._id ? author._id : null,
+      author: authorId,
       group: groupId,
     };
     const updatedFeed = await Feed.findOneAndUpdate(filter, updatedValues, {
@@ -93,6 +92,6 @@ export class WpFeedManager {
     if (rawFeed.comments) {
       await WpCommentManager.manageApiData(rawFeed.comments, updatedFeed.id);
     }
-    return updatedFeed;
+    return;
   }
 }

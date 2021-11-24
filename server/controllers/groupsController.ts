@@ -18,7 +18,7 @@ export const groupCtrl: groupCtrlType = {
     try {
       const totalItemsCount = await Group.find(
         QueryHelper.getQueryFilters(req)
-      ).count();
+      ).estimatedDocumentCount();
       const groups = await Group.find(QueryHelper.getQueryFilters(req))
         .sort(QueryHelper.getQuerySort(req))
         .limit(QueryHelper.getQueryLimit(req))

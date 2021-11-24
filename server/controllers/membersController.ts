@@ -18,7 +18,7 @@ export const memberCtrl: memberCtrlType = {
     try {
       const totalItemsCount = await Member.find(
         QueryHelper.getQueryFilters(req)
-      ).count();
+      ).estimatedDocumentCount();
       const members = await Member.find(QueryHelper.getQueryFilters(req))
         .sort(QueryHelper.getQuerySort(req))
         .limit(QueryHelper.getQueryLimit(req))

@@ -1,15 +1,19 @@
-/* eslint-disable no-async-promise-executor */
-
-import { WpApiCrawler } from "./WpApiCrawler";
-import { Member } from "../server/models/Member";
-import { wpCommentRouteResponseType, wpCommentType } from "./wpApiTypes";
-import { Comment } from "../server/models/Comment";
+import { WpApiCrawler } from "../WpApiCrawler";
+import { wpCommentRouteResponseType, wpCommentType } from "../wpApiTypes";
+import { Comment } from "../../server/models/Comment";
 import { WpMemberManager } from "./WpMemberManager";
-import { CrawlerReporter } from "./CrawlerReporter";
+import { CrawlerReporter } from "../CrawlerReporter";
 
 const API_LIMIT = 500;
 
 export class WpCommentManager {
+  // Détache les comments existants des feeds et membres pour ne pas conserver
+  // de liaison vers des feeds ou membres qui n'existeraient plus
+  public static async detachCommentsFromMembersAndFeed(): Promise<void> {
+    await Comment.updateMany({}, { feed: null, author: null });
+    return;
+  }
+
   public static async manageApiData(
     ogResp: wpCommentRouteResponseType,
     feedId: string
@@ -22,8 +26,8 @@ export class WpCommentManager {
       } catch (e) {
         CrawlerReporter.commentErrors++;
       }
-      CrawlerReporter.printShortReport();
     }
+    CrawlerReporter.printShortReport();
 
     if (ogResp.paging?.next && ogResp.paging?.cursors) {
       const formatedUrl = new URL(ogResp.paging.next);
@@ -38,21 +42,15 @@ export class WpCommentManager {
     feedId: string
   ): Promise<Comment> {
     const filter = { wpId: rawComment.id };
-    let author = await Member.findOne({ wpId: rawComment.from.id });
-    // Si le membre est inconnu, on essai de l'importer
-    if (!author) {
-      try {
-        author = await WpMemberManager.importMemberFromId(rawComment.from.id);
-      } catch {
-        author = null;
-        CrawlerReporter.memberErrors++;
-      }
-    }
+    const authorId = await WpMemberManager.getOrImportMemberIdFromWpId(
+      rawComment.from.id
+    );
+
     const updatedValues = {
       message: rawComment.message,
       createdAt: rawComment.created_time,
       wpId: rawComment.id,
-      author: author._id ? author._id : null,
+      author: authorId,
       feed: feedId,
     };
     const updatedComment = await Comment.findOneAndUpdate(
