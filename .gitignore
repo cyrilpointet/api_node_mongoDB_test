@@ -4,4 +4,5 @@
 /public/build
 public/doc
 /build
+/logs
 .env

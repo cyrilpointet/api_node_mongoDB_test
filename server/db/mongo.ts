@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { logger } from "../utils/logger";
 
 const clientOptions = {
   useNewUrlParser: true,
@@ -13,7 +14,7 @@ export const mongodb = {
     try {
       await mongoose.connect(process.env.URL_MONGO, clientOptions);
     } catch (error) {
-      console.log(error);
+      logger.error(error);
       throw error;
     }
   },
