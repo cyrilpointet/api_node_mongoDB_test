@@ -14,7 +14,7 @@ export class WpApiCrawler {
     minTime: 100,
   });
 
-  public static async populateDb(): Promise<void> {
+  public static async populateDb(isQuickMode: boolean): Promise<void> {
     console.log(`
   _  __        _                _      _          _                     _           
  | |/ /___ _ _(_)_ _  __ _   __| |__ _| |_ __ _  (_)_ __  _ __  ___ _ _| |_ ___ _ _ 
@@ -22,6 +22,9 @@ export class WpApiCrawler {
  |_|\\_\\___|_| |_|_||_\\__, | \\__,_\\__,_|\\__\\__,_| |_|_|_|_| .__/\\___/_|  \\__\\___|_|  
                      |___/                               |_|                        
 `);
+    CrawlerReporter.logger.info("Starting database import");
+    CrawlerReporter.logger.profile("Database import");
+
     await mongoose.connect(process.env.URL_MONGO, {
       useNewUrlParser: true,
       dbName: process.env.DB_NAME,
@@ -47,7 +50,7 @@ export class WpApiCrawler {
     try {
       // Importe et update les groupes
       const pendingPromises: pendingPromisesType =
-        await WpGroupManager.importGroups();
+        await WpGroupManager.importGroups(isQuickMode);
 
       // Détache les membres existants des groupes pour ne pas conserver
       // de liaison vers des groupes qui n'existeraient plus
@@ -70,6 +73,7 @@ export class WpApiCrawler {
       // TODO => supprimer les orphelins ? (groupes sans membres, feed sans groupe,...)
     } finally {
       await CrawlerReporter.printCompleteReport();
+      CrawlerReporter.logger.profile("Database import");
       await mongoose.disconnect();
     }
     return;
@@ -95,12 +99,11 @@ export class WpApiCrawler {
       return resp;
     } catch (e) {
       CrawlerReporter.pendingApiCalls--;
-      CrawlerReporter.apiErrors++;
+      CrawlerReporter.addApiError(e);
       if (!url.searchParams.get("limit")) {
         throw e;
       }
       // On ré-essaie avec une limite plus basse
-      CrawlerReporter.apiErrors500++;
       const limit = parseInt(url.searchParams.get("limit"));
       const newLimit = Math.floor(limit / 2);
       if (newLimit > 0) {

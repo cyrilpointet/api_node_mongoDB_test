@@ -46,6 +46,12 @@ export class WpCommentManager {
       rawComment.from.id
     );
 
+    if (authorId === null) {
+      CrawlerReporter.logger.warn(
+        `Unknown member ${rawComment.from.id} in comment ${rawComment.id}`
+      );
+    }
+
     const updatedValues = {
       message: rawComment.message,
       createdAt: rawComment.created_time,

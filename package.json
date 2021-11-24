@@ -6,6 +6,7 @@
     "watch": "webpack --config webpack.config.js --watch",
     "build-dev": "webpack --config webpack.config.js",
     "import-database": "node ./build/importProcess.bundle.js",
+    "quick-import-database": "node ./build/importProcess.bundle.js quick",
     "start": "./node_modules/.bin/pm2 start startup.json --name API --no-daemon"
   },
   "dependencies": {

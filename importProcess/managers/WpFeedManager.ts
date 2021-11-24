@@ -73,6 +73,12 @@ export class WpFeedManager {
       rawFeed.from.id
     );
 
+    if (authorId === null) {
+      CrawlerReporter.logger.warn(
+        `Unknown member ${rawFeed.from.id} in feed ${rawFeed.id}`
+      );
+    }
+
     const updatedValues = {
       type: rawFeed.type,
       story: rawFeed.story ? rawFeed.story : null,

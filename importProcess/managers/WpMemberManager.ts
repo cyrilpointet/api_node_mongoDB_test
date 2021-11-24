@@ -74,8 +74,8 @@ export class WpMemberManager {
         const memberIds = await this.upsertMember(data);
         memberId = memberIds.id;
         CrawlerReporter.members++;
-      } catch {
-        CrawlerReporter.memberErrors++;
+      } catch (e) {
+        CrawlerReporter.unknownMembers++;
       }
     } else {
       memberId = member._id;
