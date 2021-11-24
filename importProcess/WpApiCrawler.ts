@@ -10,8 +10,8 @@ import { WpFeedManager } from "./managers/WpFeedManager";
 
 export class WpApiCrawler {
   private static limiter = new Bottleneck({
-    maxConcurrent: 100,
-    minTime: 250,
+    maxConcurrent: 50,
+    minTime: 100,
   });
 
   public static async populateDb(): Promise<void> {
@@ -66,9 +66,6 @@ export class WpApiCrawler {
       await Promise.allSettled(
         pendingPromises.pendingFeeds.map((func) => func())
       );
-
-      // Importe et update les groupes, puis les membres et feeds et comments de chaque groupe
-      await WpGroupManager.importGroups();
 
       // TODO => supprimer les orphelins ? (groupes sans membres, feed sans groupe,...)
     } finally {
