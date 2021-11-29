@@ -1,8 +1,8 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import logger from "morgan";
 import cors from "cors";
 import { mongodb } from "./db/mongo";
+import { httpLogger } from "./utils/httpLogger";
 
 // Routes
 import { indexRouter } from "./routes";
@@ -25,7 +25,7 @@ app.use(
     origin: "*",
   })
 );
-app.use(logger("dev"));
+app.use(httpLogger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

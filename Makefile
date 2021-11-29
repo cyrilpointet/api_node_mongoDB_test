@@ -25,3 +25,6 @@ watch:
 
 import:
 	$(NODE) yarn import-database
+
+quick_import:
+	$(NODE) yarn quick-import-database

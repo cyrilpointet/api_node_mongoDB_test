@@ -20,17 +20,24 @@ const GROUP_FIELDS = [
 ];
 
 const GROUP_LIMIT = 200;
+const QUICK_GROUP_LIMIT = 30;
 
 export class WpGroupManager {
+  private static isQuickMode = false;
+  private static groupLimit = GROUP_LIMIT;
   private static pendingMembers: Array<() => Promise<void>> = [];
   private static pendingFeeds: Array<() => Promise<void>> = [];
 
-  public static async importGroups(): Promise<pendingPromisesType> {
+  public static async importGroups(
+    isQuickMode: boolean
+  ): Promise<pendingPromisesType> {
+    this.isQuickMode = isQuickMode;
+    this.groupLimit = isQuickMode ? QUICK_GROUP_LIMIT : GROUP_LIMIT;
     const url = new URL(
       process.env.KERING_OG_ID + "/groups",
       process.env.OG_BASE_URL
     );
-    url.searchParams.set("limit", GROUP_LIMIT.toString());
+    url.searchParams.set("limit", this.groupLimit.toString());
     url.searchParams.set("fields", GROUP_FIELDS.join());
     const { data } = await WpApiCrawler.getDataFromApiUrl(url);
     await this.manageApiData(data);
@@ -53,9 +60,9 @@ export class WpGroupManager {
       CrawlerReporter.printShortReport();
     }
 
-    if (ogResp.paging?.next) {
+    if (ogResp.paging?.next && !this.isQuickMode) {
       const formatedUrl = new URL(ogResp.paging.next);
-      formatedUrl.searchParams.set("limit", GROUP_LIMIT.toString());
+      formatedUrl.searchParams.set("limit", this.groupLimit.toString());
       const newResp = await WpApiCrawler.getDataFromApiUrl(formatedUrl);
       await this.manageApiData(newResp.data);
     } else {

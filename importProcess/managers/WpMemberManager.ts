@@ -75,7 +75,7 @@ export class WpMemberManager {
         memberId = memberIds.id;
         CrawlerReporter.members++;
       } catch {
-        CrawlerReporter.memberErrors++;
+        CrawlerReporter.unknownMembers++;
       }
     } else {
       memberId = member._id;

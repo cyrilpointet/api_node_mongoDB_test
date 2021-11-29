@@ -1,10 +1,14 @@
 import { WpApiCrawler } from "./WpApiCrawler";
+import { CrawlerReporter } from "./CrawlerReporter";
 
-WpApiCrawler.populateDb()
+const args = process.argv.slice(2);
+const isQuickMode: boolean = args[0] === "quick";
+
+WpApiCrawler.populateDb(isQuickMode)
   .then(async () => {
-    console.log(`\x1b[32m****** DB successfully updated ******\x1b[0m`);
+    CrawlerReporter.logger.info(`DB successfully updated`);
   })
   .catch(async (e) => {
-    console.error("\x1b[31mError: import stopped\x1b[0m");
-    console.error(e.message);
+    CrawlerReporter.logger.error(`Import stopped:
+      ${e.message}`);
   });

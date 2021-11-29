@@ -3,7 +3,8 @@
 ## Lancement
 Copier/coller **.env.dev.override** en le renommant **.env**<br>
 Lancer le projet : `make run` <br>
-Remplir la base avec des données de l'api kering pour avoir au moins un compte admin: `make import`
+Remplir la base avec des données de l'api kering pour avoir au moins un compte admin: `make import`<br>
+Pour un remplissage partiel rapide, utiliser: `make quick_import`
 
 Identifiant de connexion au back office:<br>
 Email : admin@admin.admin<br/>
